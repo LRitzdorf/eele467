@@ -87,9 +87,10 @@ remote repository:
    ```sh
    $ git push
    ```
-1. **Push the tag**:
+1. **Push the tag**, either by specifying it explicitly or by pushing *all* tags:
    ```sh
-   $ git push --tags
+   $ git push origin lab-7-submission  # to push just the specified tag
+   $ git push --tags                   # to push all tags
    ```
 1. **Celebrate!** 🎉
 
