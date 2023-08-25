@@ -80,7 +80,7 @@ remote repository:
    ```
 1. **Tag the submission** with the tag name `lab-7-submission` (git will open your default text editor and prompt you for additional information):
    ```sh
-   $ git tag -a
+   $ git tag -a lab-7-submission
    ```
    **Note:** If it takes multiple submissions to get a successfully working lab demonstration, number the tag submissions, i.e. `lab-7-submission1`, `lab-7-submission2`, etc. and end with: `lab-7-submission-final`
 1. **Push the commits**:
