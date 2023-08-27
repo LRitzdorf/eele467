@@ -87,7 +87,7 @@ dkms.conf
 *.sig
 *.hb_info
 *.summary
-*srf
+*.srf
 c5_pin_model_dump.txt
 synthesis/
 submodules/
