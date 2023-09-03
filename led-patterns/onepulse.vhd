@@ -21,7 +21,11 @@ architecture OnePulse_Arch of OnePulse is
 begin
 pulse: process(clk) is begin
     if rising_edge(clk) then
-        output <= '1' when (input and not output) else '0';
+        if input and not output then
+            output <= '1';
+        else
+            output <= '0';
+        end if;
     end if;
 end process;
 end architecture;
