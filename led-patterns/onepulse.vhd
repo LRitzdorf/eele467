@@ -19,5 +19,9 @@ end entity;
 -- Basic synchronous edge detector
 architecture OnePulse_Arch of OnePulse is
 begin
-    -- TODO
+pulse: process(clk) is begin
+    if rising_edge(clk) then
+        output <= '1' when (input and not output) else '0';
+    end if;
+end process;
 end architecture;

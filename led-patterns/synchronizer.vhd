@@ -18,6 +18,12 @@ end entity;
 
 -- Basic dual-flip-flop synchronizer
 architecture Synchronizer_Arch of Synchronizer is
+    signal d : std_logic;
 begin
-    -- TODO
+sync: process (clk) begin
+    if rising_edge(clk) then
+        d <= input;
+        output <= d;
+    end if;
+end process;
 end architecture;

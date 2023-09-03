@@ -21,6 +21,31 @@ end entity;
 -- Synchronous debouncer which ignores changes for a specified number of cycles
 -- following an initial change
 architecture Debouncer_Arch of Debouncer is
+    type state_t is (READY, BOUNCE);
+    signal state : state_t;
+    signal count : integer range 0 to DELAY_CYCLES-1;
 begin
-    -- TODO
+debounce: process (clk) is begin
+    if rising_edge(clk) then
+        if reset then
+            state <= READY;
+            output <= '0';
+        else
+            case state is
+                when READY =>
+                    if input /= output then
+                        state <= BOUNCE;
+                        count <= 0;
+                    end if;
+                    output <= input;
+                when BOUNCE =>
+                    if count = DELAY_CYCLES-1 then
+                        state <= READY;
+                    else
+                        count <= count + 1;
+                    end if;
+            end case;
+        end if;
+    end if;
+end process;
 end architecture;
