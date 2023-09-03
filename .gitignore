@@ -100,4 +100,9 @@ incremental_db/
 output_files/
 work/
 
+# ModelSim/Questa files
+*.mpf
+*.cr.mti
+transcript
+simulation/
 
