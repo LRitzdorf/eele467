@@ -37,8 +37,41 @@ begin
 
     -- Test driver
     tester: process begin
-        -- TODO: Test driver body
-        wait;
+        wait until falling_edge(clk);
+
+        reset <= '0';
+        input <= '0';
+        wait until falling_edge(clk);
+        assert output = '0' severity error;
+
+        reset <= '1';
+        wait until falling_edge(clk);
+        assert output = '0' severity error;
+
+        input <= '1';
+        wait until falling_edge(clk);
+        input <= '0';
+        -- This momentary HIGH input should result in a sequence of two
+        -- debounce cycles: one when the input goes high (and it latched at the
+        -- next clock edge), and another immediately afterward, when the first
+        -- cycle ends and the now-LOW input is latched again.
+        for i in 1 to 10 loop
+            assert output = '1' severity error;
+            wait until falling_edge(clk);
+        end loop;
+        for i in 1 to 10 loop
+            assert output = '0' severity error;
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Ensure that a consistently HIGH input continues to be presented at
+        -- output after debouncing completes
+        input <= '1';
+        wait until falling_edge(clk);
+        for i in 1 to 15 loop
+            assert output = '1' severity error;
+            wait until falling_edge(clk);
+        end loop;
 
         finish;
     end process;
