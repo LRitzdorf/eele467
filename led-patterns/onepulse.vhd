@@ -18,14 +18,16 @@ end entity;
 
 -- Basic synchronous edge detector
 architecture OnePulse_Arch of OnePulse is
+    signal last_input : std_logic;
 begin
 pulse: process(clk) is begin
     if rising_edge(clk) then
-        if input and not output then
+        if input and not last_input then
             output <= '1';
         else
             output <= '0';
         end if;
+        last_input <= input;
     end if;
 end process;
 end architecture;

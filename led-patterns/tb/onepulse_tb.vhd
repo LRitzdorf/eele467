@@ -45,8 +45,10 @@ begin
         wait until falling_edge(clk);
         assert output = '1' severity error;
 
-        wait until falling_edge(clk);
-        assert output = '0' severity error;
+        for i in 1 to 5 loop
+            wait until falling_edge(clk);
+            assert output = '0' severity error;
+        end loop;
 
         input <= '0';
         wait until falling_edge(clk);
