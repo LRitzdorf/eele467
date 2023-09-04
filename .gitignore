@@ -101,8 +101,20 @@ output_files/
 work/
 
 # ModelSim/Questa files
+[_@]*
 *.mpf
-*.cr.mti
-transcript
+*.mti
+*.dat
+*.dbs
+*.psm
+*.bsf
+wlf*
+*.wlf
+*.vstf
+*.ucdb
+cov*/
 simulation/
+transcript*
+sc_dpiheader.h
+vsim.dbg
 
