@@ -7,6 +7,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
+use ieee.math_real.uniform;  -- For random number generation
 
 
 -- Conditioner test bench
@@ -20,6 +21,7 @@ begin
 
     -- Conditioner DUT instance
     dut: entity work.Conditioner
+        generic map (DEBOUNCE_CYCLES => 10)
         port map (clk,
                   reset,
                   input,
@@ -35,9 +37,67 @@ begin
     end process;
 
     -- Test driver
-    tester: process begin
-        -- TODO: Test driver body
-        wait;
+    -- NOTE: This testbench is NOT automated! This would be rather intensive to
+    -- build, and would likely be rather fragile anyway. Instead, it simply
+    -- produces a representative set of inputs, and requires that the DUT's
+    -- outputs be manually verified.
+    tester: process
+
+        -- Pseudorandom std_logic_vector provider
+        -- Sourced from https://vhdlwhiz.com/random-numbers on 09/04/2023
+        variable seed1, seed2 : integer := 999;
+        impure function rand_slv(len : integer) return std_logic_vector is
+            variable r : real;
+            variable slv : std_logic_vector(len - 1 downto 0);
+        begin
+            for i in slv'range loop
+                uniform(seed1, seed2, r);
+                slv(i) := '1' when r > 0.5 else '0';
+            end loop;
+            return slv;
+        end function;
+
+        variable bouncy : std_logic_vector(1 to 8);
+
+    begin
+        wait until falling_edge(clk);
+
+        -- Initialization: reset system
+        reset <= '0';
+        input <= '0';
+        for i in 1 to 5 loop
+            wait until falling_edge(clk);
+        end loop;
+        reset <= '1';
+        wait until falling_edge(clk);
+
+        -- Basic test: input pulse faster than debounce time
+        input <= '1';
+        wait until falling_edge(clk);
+        input <= '0';
+        for i in 1 to 25 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Basic test: input pulse longer than debounce time
+        input <= '1';
+        wait until falling_edge(clk);
+        for i in 1 to 15 loop
+            wait until falling_edge(clk);
+        end loop;
+        input <= '0';
+
+        -- Randomized test: noisy input pulse within debounce timeframe
+        bouncy := rand_slv(bouncy'length);
+        -- Supply bouncy input for a while
+        for i in bouncy'range loop
+            input <= bouncy(i);
+            wait until falling_edge(clk);
+        end loop;
+        -- Wait for the rest of the test duration
+        for i in 1 to (15 - bouncy'length) loop
+            wait until falling_edge(clk);
+        end loop;
 
         finish;
     end process;
