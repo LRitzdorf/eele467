@@ -35,8 +35,22 @@ begin
 
     -- Test driver
     tester: process begin
-        -- TODO: Test driver body
-        wait;
+        wait until falling_edge(clk);
+
+        input <= '0';
+        wait until falling_edge(clk);
+        assert output = '0' severity error;
+
+        input <= '1';
+        wait until falling_edge(clk);
+        assert output = '1' severity error;
+
+        wait until falling_edge(clk);
+        assert output = '0' severity error;
+
+        input <= '0';
+        wait until falling_edge(clk);
+        assert output = '0' severity error;
 
         finish;
     end process;
