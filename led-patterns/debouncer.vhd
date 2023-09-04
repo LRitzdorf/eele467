@@ -27,7 +27,7 @@ architecture Debouncer_Arch of Debouncer is
 begin
 debounce: process (clk) is begin
     if rising_edge(clk) then
-        if reset then
+        if not reset then
             state <= READY;
             output <= '0';
         else
