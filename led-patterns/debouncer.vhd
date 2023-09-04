@@ -23,7 +23,7 @@ end entity;
 architecture Debouncer_Arch of Debouncer is
     type state_t is (READY, BOUNCE);
     signal state : state_t;
-    signal count : integer range 0 to DELAY_CYCLES-1;
+    signal count : integer range 0 to DELAY_CYCLES-2;
 begin
 debounce: process (clk) is begin
     if rising_edge(clk) then
@@ -39,7 +39,7 @@ debounce: process (clk) is begin
                     end if;
                     output <= input;
                 when BOUNCE =>
-                    if count = DELAY_CYCLES-1 then
+                    if count = DELAY_CYCLES-2 then
                         state <= READY;
                     else
                         count <= count + 1;
