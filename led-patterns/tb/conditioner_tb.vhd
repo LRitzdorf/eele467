@@ -87,16 +87,25 @@ begin
         end loop;
         input <= '0';
 
-        -- Randomized test: noisy input pulse within debounce timeframe
-        bouncy := rand_slv(bouncy'length);
-        -- Supply bouncy input for a while
-        for i in bouncy'range loop
-            input <= bouncy(i);
-            wait until falling_edge(clk);
-        end loop;
-        -- Wait for the rest of the test duration
-        for i in 1 to (15 - bouncy'length) loop
-            wait until falling_edge(clk);
+        -- Randomized test series: noisy input pulse within debounce timeframe
+        for test_num in 1 to 5 loop
+            -- Allow DUT to settle back to idle state
+            input <= '0';
+            for i in 1 to 15 loop
+                wait until falling_edge(clk);
+            end loop;
+
+            -- Supply bouncy input for a while
+            bouncy := rand_slv(bouncy'length);
+            for i in bouncy'range loop
+                input <= bouncy(i);
+                wait until falling_edge(clk);
+            end loop;
+            -- Wait for the rest of the test duration
+            input <= '1';
+            for i in 1 to (15 - bouncy'length) loop
+                wait until falling_edge(clk);
+            end loop;
         end loop;
 
         finish;
