@@ -24,8 +24,8 @@ begin
         generic map (DEBOUNCE_CYCLES => 10)
         port map (clk,
                   reset,
-                  input,
-                  output);
+                  input(0) => input,
+                  output(0) => output);
 
     -- Clock driver
     clock: process begin
