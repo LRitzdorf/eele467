@@ -45,7 +45,7 @@ begin
 
         -- Pseudorandom std_logic_vector provider
         -- Sourced from https://vhdlwhiz.com/random-numbers on 09/04/2023
-        variable seed1, seed2 : integer := 999;
+        variable seed1, seed2 : integer := 42;
         impure function rand_slv(len : integer) return std_logic_vector is
             variable r : real;
             variable slv : std_logic_vector(len - 1 downto 0);
