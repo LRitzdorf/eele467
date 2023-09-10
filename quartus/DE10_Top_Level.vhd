@@ -83,13 +83,24 @@ end entity;
 
 architecture DE10Nano_arch of DE10_Top_Level is
 
+    -- Conditioned signals
+    signal KEY1 : std_logic;
+
 begin
+
+    -- Instantiate signal conditioner
+    conditioner: entity work.Conditioner
+        generic map (WIDTH => 1)
+        port map (clk => FPGA_CLK1_50,
+                  reset => KEY(0),
+                  input(0) => KEY(1),
+                  output(0) => KEY1);
 
     -- Instantiate LED pattern driver
     patterns: entity work.LED_Patterns
         port map (clk => FPGA_CLK1_50,
                   reset => KEY(0),
-                  PB => KEY(1),
+                  PB => KEY1,
                   SW => SW,
                   HPS_LED_control => '0',
                   SYS_CLKs_sec => std_logic_vector(to_unsigned(50000, 32)),
