@@ -50,12 +50,29 @@ hps_mux: with HPS_LED_control select
 
 -- Mux between internal patterns, based on internal pattern state
 pattern_mux: with current_pattern select
-    LED_hw <=
-        x"01" when SHIFT_RIGHT,
-        x"02" when SHIFT_LEFT,
-        x"03" when COUNT_UP,
-        x"04" when COUNT_DOWN,
-        x"05" when USER,
-        x"00" when others;
+    LED_hw(6 downto 0) <=
+        b"0000001"  when SHIFT_RIGHT,
+        b"0000010"  when SHIFT_LEFT,
+        b"0000100"  when COUNT_UP,
+        b"0001000"  when COUNT_DOWN,
+        b"0010000"  when USER,
+        b"1111111"  when others;
+
+
+-- Toggle the "heartbeat" LED every second
+heartbeat: process(clk)
+    variable ticks : natural;
+begin
+    if reset then
+        LED_hw(7) <= '0';
+        ticks := 0;
+    elsif ticks = (x"1" * Base_rate * SYS_CLKs_sec) - 1 then
+        LED_hw(7) <= not LED_hw(7);
+        ticks := 0;
+    else
+        ticks := ticks + 1;
+    end if;
+end process;
+
 
 end architecture;
