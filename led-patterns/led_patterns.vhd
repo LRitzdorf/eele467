@@ -120,6 +120,11 @@ begin
     if reset then
         pattern <= b"1000000";
         ticks := 0;
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 2) / 2**4 - 1 then
+        pattern <= std_logic_vector(unsigned(pattern) ror 1);
+        ticks := 0;
+    else
+        ticks := ticks + 1;
     end if;
 end process;
 
@@ -131,6 +136,11 @@ begin
     if reset then
         pattern <= b"0000011";
         ticks := 0;
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 4) / 2**4 - 1 then
+        pattern <= std_logic_vector(unsigned(pattern) rol 1);
+        ticks := 0;
+    else
+        ticks := ticks + 1;
     end if;
 end process;
 
@@ -142,6 +152,11 @@ begin
     if reset then
         pattern <= b"0000000";
         ticks := 0;
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec * 2) / 2**4 - 1 then
+        pattern <= pattern + 1;
+        ticks := 0;
+    else
+        ticks := ticks + 1;
     end if;
 end process;
 
@@ -153,6 +168,11 @@ begin
     if reset then
         pattern <= b"1111111";
         ticks := 0;
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 8) / 2**4 - 1 then
+        pattern <= pattern - 1;
+        ticks := 0;
+    else
+        ticks := ticks + 1;
     end if;
 end process;
 
@@ -165,6 +185,12 @@ begin
     if reset then
         full_pattern := b"000000011";
         ticks := 0;
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 8) / 2**4 - 1 then
+        -- TODO: Replace with actual chaser logic
+        full_pattern := b"111111111";
+        ticks := 0;
+    else
+        ticks := ticks + 1;
     end if;
     pattern <= full_pattern(7 downto 1);
 end process;
