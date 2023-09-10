@@ -114,51 +114,51 @@ end process;
 
 -- One LED, shifting right
 shift_right_fsm: process(clk)
-    constant PATTERN_NUM : integer := 0;
+    alias pattern is patterns(0);
     variable ticks : natural;
 begin
     if reset then
-        patterns(PATTERN_NUM) <= b"1000000";
+        pattern <= b"1000000";
         ticks := 0;
     end if;
 end process;
 
 -- Two LEDs, shifting left
 shift_left_fsm: process(clk)
-    constant PATTERN_NUM : integer := 1;
+    alias pattern is patterns(1);
     variable ticks : natural;
 begin
     if reset then
-        patterns(PATTERN_NUM) <= b"0000011";
+        pattern <= b"0000011";
         ticks := 0;
     end if;
 end process;
 
 -- Binary up-counter
 count_up_fsm: process(clk)
-    constant PATTERN_NUM : integer := 2;
+    alias pattern is patterns(2);
     variable ticks : natural;
 begin
     if reset then
-        patterns(PATTERN_NUM) <= b"0000000";
+        pattern <= b"0000000";
         ticks := 0;
     end if;
 end process;
 
 -- Binary down-counter
 count_down_fsm: process(clk)
-    constant PATTERN_NUM : integer := 3;
+    alias pattern is patterns(3);
     variable ticks : natural;
 begin
     if reset then
-        patterns(PATTERN_NUM) <= b"1111111";
+        pattern <= b"1111111";
         ticks := 0;
     end if;
 end process;
 
 -- Custom pattern: KITT chaser lights
 custom_fsm: process(clk)
-    constant PATTERN_NUM : integer := 4;
+    alias pattern is patterns(4);
     variable ticks : natural;
     variable full_pattern : std_logic_vector(8 downto 0);
 begin
@@ -166,7 +166,7 @@ begin
         full_pattern := b"000000011";
         ticks := 0;
     end if;
-    patterns(PATTERN_NUM) <= full_pattern(7 downto 1);
+    pattern <= full_pattern(7 downto 1);
 end process;
 
 
