@@ -63,7 +63,8 @@ CFLAGS=-g -Wall -std=gnu99 -O0 $(INC_PARAMS)
 # that some libraries may be missing or have incompatible versions; thus, we
 # default to static linking, at the expense of larger binaries; if this is
 # undesirable for your application, use dynamic linking instead!
-ARM_LDFLAGS=-static
+#ARM_LDFLAGS=-static
+ARM_LDFLAGS=
 
 # arm cross compiler
 CC_ARM=$(CROSS_COMPILE)gcc
