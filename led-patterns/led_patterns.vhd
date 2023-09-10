@@ -23,7 +23,7 @@ entity LED_Patterns is
         SW              : in  std_logic_vector(3 downto 0);
         -- Asserted when software is in control
         HPS_LED_control : in  std_logic;
-        -- Base transition period, in seconds
+        -- Base transition period, in seconds (UQ4.4)
         Base_rate       : in  unsigned(7 downto 0);
         -- LED register
         LED_reg         : in  std_logic_vector(7 downto 0);
@@ -73,7 +73,7 @@ begin
     if reset then
         LED_hw(7) <= '0';
         ticks := 0;
-    elsif ticks = (1 * to_integer(Base_rate) * SYS_CLKs_sec) - 1 then
+    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
         LED_hw(7) <= not LED_hw(7);
         ticks := 0;
     else
@@ -100,7 +100,7 @@ begin
         else                 next_pattern <= current_pattern;
         end if;
     elsif current_pattern = SWITCH then
-        if ticks = (1 * to_integer(Base_rate) * SYS_CLKs_sec) - 1 then
+        if ticks = (to_integer(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
             current_pattern <= next_pattern;
             ticks := 0;
         else
