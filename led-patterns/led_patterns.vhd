@@ -85,14 +85,14 @@ begin
         ticks := 0;
     elsif PB then
         current_pattern <= SWITCH;
-        with SW select
-            next_pattern <=
-                SHIFT_RIGHT when x"0",
-                SHIFT_LEFT  when x"1",
-                COUNT_UP    when x"2",
-                COUNT_DOWN  when x"3",
-                CUSTOM      when x"4",
-                current_pattern when others;
+        -- Why the heck can't I use a select statement here, Quartus?
+        if    SW = x"1" then next_pattern <= SHIFT_RIGHT;
+        elsif SW = x"1" then next_pattern <= SHIFT_LEFT;
+        elsif SW = x"2" then next_pattern <= COUNT_UP;
+        elsif SW = x"3" then next_pattern <= COUNT_DOWN;
+        elsif SW = x"4" then next_pattern <= CUSTOM;
+        else                 next_pattern <= current_pattern;
+        end if;
     elsif current_pattern = SWITCH then
         if ticks = (x"1" * Base_rate * SYS_CLKs_sec) - 1 then
             current_pattern <= next_pattern;
