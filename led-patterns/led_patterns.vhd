@@ -39,6 +39,10 @@ architecture LED_Patterns_Arch of LED_Patterns is
     type pattern_t is (SWITCH, SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, CUSTOM);
     signal current_pattern, next_pattern : pattern_t;
 
+    -- Internal pattern signals
+    type pattern_array_t is array(natural range <>) of std_logic_vector(6 downto 0);
+    signal patterns : pattern_array_t(4 downto 0);
+
 begin
 
 
@@ -52,11 +56,11 @@ hps_mux: with HPS_LED_control select
 pattern_mux: with current_pattern select
     LED_hw(6 downto 0) <=
         b"000" & SW when SWITCH,
-        b"0000001"  when SHIFT_RIGHT,
-        b"0000010"  when SHIFT_LEFT,
-        b"0000100"  when COUNT_UP,
-        b"0001000"  when COUNT_DOWN,
-        b"0010000"  when CUSTOM,
+        patterns(0) when SHIFT_RIGHT,
+        patterns(1) when SHIFT_LEFT,
+        patterns(2) when COUNT_UP,
+        patterns(3) when COUNT_DOWN,
+        patterns(4) when CUSTOM,
         b"1111111"  when others;
 
 
@@ -104,9 +108,64 @@ begin
 end process;
 
 
--- Pattern generation
+-- Pattern-generation state machines
 
--- TODO: All patterns, as described in the textbook
+-- One LED, shifting right
+shift_right_fsm: process(clk)
+    constant PATTERN_NUM : integer := 0;
+    variable ticks : natural;
+begin
+    if reset then
+        patterns(PATTERN_NUM) <= b"1000000";
+        ticks := 0;
+    end if;
+end process;
+
+-- Two LEDs, shifting left
+shift_left_fsm: process(clk)
+    constant PATTERN_NUM : integer := 1;
+    variable ticks : natural;
+begin
+    if reset then
+        patterns(PATTERN_NUM) <= b"0000011";
+        ticks := 0;
+    end if;
+end process;
+
+-- Binary up-counter
+count_up_fsm: process(clk)
+    constant PATTERN_NUM : integer := 2;
+    variable ticks : natural;
+begin
+    if reset then
+        patterns(PATTERN_NUM) <= b"0000000";
+        ticks := 0;
+    end if;
+end process;
+
+-- Binary down-counter
+count_down_fsm: process(clk)
+    constant PATTERN_NUM : integer := 3;
+    variable ticks : natural;
+begin
+    if reset then
+        patterns(PATTERN_NUM) <= b"1111111";
+        ticks := 0;
+    end if;
+end process;
+
+-- Custom pattern: KITT chaser lights
+custom_fsm: process(clk)
+    constant PATTERN_NUM : integer := 4;
+    variable ticks : natural;
+    variable full_pattern : std_logic_vector(8 downto 0);
+begin
+    if reset then
+        full_pattern := b"000000011";
+        ticks := 0;
+    end if;
+    patterns(PATTERN_NUM) <= full_pattern(7 downto 1);
+end process;
 
 
 end architecture;
