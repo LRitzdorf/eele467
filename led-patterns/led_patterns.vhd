@@ -10,23 +10,25 @@ use ieee.std_logic_unsigned.all;
 
 -- LED Patterns interface
 entity LED_Patterns is
-    port (clk   : in std_logic;
-          -- NOTE: Active high reset
-          reset : in std_logic;
-          -- Active high state-change signal
-          PB              : in  std_logic;
-          -- Next-state selection switches
-          SW              : in  std_logic_vector(3 downto 0);
-          -- Asserted when software is in control
-          HPS_LED_control : in  std_logic;
-          -- Number of system clock cycles per second
-          SYS_CLKs_sec    : in  std_logic_vector(31 downto 0);
-          -- Base transition period, in seconds (UQ4.4)
-          Base_rate       : in  std_logic_vector(7 downto 0);
-          -- LED register
-          LED_reg         : in  std_logic_vector(7 downto 0);
-          -- LED outputs
-          LED             : out std_logic_vector(7 downto 0));
+    generic (
+        -- Number of system clock cycles per second
+        SYS_CLKs_sec    : natural);
+    port (
+        clk   : in std_logic;
+        -- NOTE: Active high reset
+        reset : in std_logic;
+        -- Active high state-change signal
+        PB              : in  std_logic;
+        -- Next-state selection switches
+        SW              : in  std_logic_vector(3 downto 0);
+        -- Asserted when software is in control
+        HPS_LED_control : in  std_logic;
+        -- Base transition period, in seconds
+        Base_rate       : in  unsigned(7 downto 0);
+        -- LED register
+        LED_reg         : in  std_logic_vector(7 downto 0);
+        -- LED outputs
+        LED             : out std_logic_vector(7 downto 0));
 end entity;
 
 
@@ -71,7 +73,7 @@ begin
     if reset then
         LED_hw(7) <= '0';
         ticks := 0;
-    elsif ticks = (x"1" * Base_rate * SYS_CLKs_sec) - 1 then
+    elsif ticks = (1 * to_integer(Base_rate) * SYS_CLKs_sec) - 1 then
         LED_hw(7) <= not LED_hw(7);
         ticks := 0;
     else
@@ -98,7 +100,7 @@ begin
         else                 next_pattern <= current_pattern;
         end if;
     elsif current_pattern = SWITCH then
-        if ticks = (x"1" * Base_rate * SYS_CLKs_sec) - 1 then
+        if ticks = (1 * to_integer(Base_rate) * SYS_CLKs_sec) - 1 then
             current_pattern <= next_pattern;
             ticks := 0;
         else
