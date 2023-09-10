@@ -31,9 +31,31 @@ end entity;
 
 
 architecture LED_Patterns_Arch of LED_Patterns is
+
+    -- Mux-able signal for HW-generated LED pattern
+    signal LED_hw : std_logic_vector(7 downto 0);
+
+    -- Pattern generator state machine signals
+    type pattern_t is (SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, USER);
+    signal current_pattern, next_pattern : pattern_t;
+
 begin
 
-    -- TODO: Replace with actual logic
-    LED <= b"01010101";
+
+-- Mux between HPS signals and internal pattern, based on HPS control signal
+hps_mux: with HPS_LED_control select
+    LED <=
+        LED_reg when '1',
+        LED_hw when others;
+
+-- Mux between internal patterns, based on internal pattern state
+pattern_mux: with current_pattern select
+    LED_hw <=
+        x"01" when SHIFT_RIGHT,
+        x"02" when SHIFT_LEFT,
+        x"03" when COUNT_UP,
+        x"04" when COUNT_DOWN,
+        x"05" when USER,
+        x"00" when others;
 
 end architecture;
