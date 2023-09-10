@@ -181,17 +181,30 @@ custom_fsm: process(clk)
     alias pattern is patterns(4);
     variable ticks : natural;
     variable full_pattern : std_logic_vector(8 downto 0);
+    variable forward : std_logic;
 begin
     if reset then
         full_pattern := b"000000011";
+        forward := '0';
         ticks := 0;
     elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 8) / 2**4 - 1 then
-        -- TODO: Replace with actual chaser logic
-        full_pattern := b"111111111";
+        -- Direction switching
+        if full_pattern(full_pattern'left) then
+            forward := '1';
+        elsif full_pattern(full_pattern'right) then
+            forward := '0';
+        end if;
+        -- Pattern rotation
+        if forward then
+            full_pattern := std_logic_vector(unsigned(full_pattern) ror 1);
+        else
+            full_pattern := std_logic_vector(unsigned(full_pattern) rol 1);
+        end if;
         ticks := 0;
     else
         ticks := ticks + 1;
     end if;
+    -- Cut off the two outermost bits, to produce a better-looking pattern
     pattern <= full_pattern(7 downto 1);
 end process;
 
