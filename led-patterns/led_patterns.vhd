@@ -91,8 +91,9 @@ begin
         ticks := 0;
     elsif PB then
         current_pattern <= SWITCH;
-        -- Why the heck can't I use a select statement here, Quartus?
-        if    SW = x"1" then next_pattern <= SHIFT_RIGHT;
+        -- Quartus doesn't like select statements inside of processes, though
+        -- they should be valid in VHDL-2008
+        if    SW = x"0" then next_pattern <= SHIFT_RIGHT;
         elsif SW = x"1" then next_pattern <= SHIFT_LEFT;
         elsif SW = x"2" then next_pattern <= COUNT_UP;
         elsif SW = x"3" then next_pattern <= COUNT_DOWN;
