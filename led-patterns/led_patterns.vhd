@@ -36,7 +36,7 @@ architecture LED_Patterns_Arch of LED_Patterns is
     signal LED_hw : std_logic_vector(7 downto 0);
 
     -- Pattern generator state machine signals
-    type pattern_t is (SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, USER);
+    type pattern_t is (SWITCH, SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, CUSTOM);
     signal current_pattern, next_pattern : pattern_t;
 
 begin
@@ -51,11 +51,12 @@ hps_mux: with HPS_LED_control select
 -- Mux between internal patterns, based on internal pattern state
 pattern_mux: with current_pattern select
     LED_hw(6 downto 0) <=
+        b"000" & SW when SWITCH,
         b"0000001"  when SHIFT_RIGHT,
         b"0000010"  when SHIFT_LEFT,
         b"0000100"  when COUNT_UP,
         b"0001000"  when COUNT_DOWN,
-        b"0010000"  when USER,
+        b"0010000"  when CUSTOM,
         b"1111111"  when others;
 
 
@@ -73,6 +74,25 @@ begin
         ticks := ticks + 1;
     end if;
 end process;
+
+
+-- Pattern state machine
+pattern_fsm: process(clk)
+    variable ticks : natural;
+begin
+    if reset then
+        current_pattern <= SHIFT_RIGHT;
+    elsif PB then
+        -- TODO: Display switch state for one second
+    else
+        -- TODO: Actual state transition logic
+    end if;
+end process;
+
+
+-- Pattern generation
+
+-- TODO: All patterns, as described in the textbook
 
 
 end architecture;
