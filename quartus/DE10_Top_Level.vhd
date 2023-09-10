@@ -85,7 +85,17 @@ architecture DE10Nano_arch of DE10_Top_Level is
 
 begin
 
-    -- TODO: Instantiate LED pattern driver
+    -- Instantiate LED pattern driver
+    patterns: entity work.LED_Patterns
+        port map (clk => FPGA_CLK1_50,
+                  reset => KEY(0),
+                  PB => KEY(1),
+                  SW => SW,
+                  HPS_LED_control => '0',
+                  SYS_CLKs_sec => std_logic_vector(to_unsigned(50000, 32)),
+                  Base_rate => x"10",  -- UQ4.4
+                  LED_reg => x"00",
+                  LED => LED);
 
 end architecture;
 
