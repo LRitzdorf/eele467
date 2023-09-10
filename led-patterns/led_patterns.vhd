@@ -82,10 +82,24 @@ pattern_fsm: process(clk)
 begin
     if reset then
         current_pattern <= SHIFT_RIGHT;
+        ticks := 0;
     elsif PB then
-        -- TODO: Display switch state for one second
-    else
-        -- TODO: Actual state transition logic
+        current_pattern <= SWITCH;
+        with SW select
+            next_pattern <=
+                SHIFT_RIGHT when x"0",
+                SHIFT_LEFT  when x"1",
+                COUNT_UP    when x"2",
+                COUNT_DOWN  when x"3",
+                CUSTOM      when x"4",
+                current_pattern when others;
+    elsif current_pattern = SWITCH then
+        if ticks = (x"1" * Base_rate * SYS_CLKs_sec) - 1 then
+            current_pattern <= next_pattern;
+            ticks := 0;
+        else
+            ticks := ticks + 1;
+        end if;
     end if;
 end process;
 
