@@ -59,7 +59,7 @@ clockgen: entity work.ClockGenerator
         CLK_SCALES(2) => x"04",  -- Shift left: 1/4
         CLK_SCALES(3) => x"20",  -- Count up: 2
         CLK_SCALES(4) => x"02",  -- Count down: 1/8
-        CLK_SCALES(5) => x"02")  -- Custom: 1/8
+        CLK_SCALES(5) => x"01")  -- Custom: 1/16
     port map (
         clk,
         reset,
