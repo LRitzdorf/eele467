@@ -39,14 +39,32 @@ architecture LED_Patterns_Arch of LED_Patterns is
     signal LED_hw : std_logic_vector(7 downto 0);
 
     -- Pattern generator state machine signals
+    signal pattern_clocks : std_logic_vector(5 downto 0);
     type pattern_t is (SWITCH, SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, CUSTOM);
     signal current_pattern, next_pattern : pattern_t;
 
     -- Internal pattern signals
     type pattern_array_t is array(natural range <>) of std_logic_vector(6 downto 0);
-    signal patterns : pattern_array_t(4 downto 0);
+    signal patterns : pattern_array_t(5 downto 1);
 
 begin
+
+
+-- Clock generator instantiation
+clockgen: entity work.ClockGenerator
+    generic map (
+        SYS_CLKs_sec,
+        CLK_SCALES(0) => x"10",  -- Heartbeat: 1
+        CLK_SCALES(1) => x"08",  -- Shift right: 1/2
+        CLK_SCALES(2) => x"04",  -- Shift left: 1/4
+        CLK_SCALES(3) => x"20",  -- Count up: 2
+        CLK_SCALES(4) => x"02",  -- Count down: 1/8
+        CLK_SCALES(5) => x"02")  -- Custom: 1/8
+    port map (
+        clk,
+        reset,
+        Base_rate,
+        gen_clocks => pattern_clocks);
 
 
 -- Mux between HPS signals and internal pattern, based on HPS control signal
@@ -59,31 +77,28 @@ hps_mux: with HPS_LED_control select
 pattern_mux: with current_pattern select
     LED_hw(6 downto 0) <=
         b"000" & SW when SWITCH,
-        patterns(0) when SHIFT_RIGHT,
-        patterns(1) when SHIFT_LEFT,
-        patterns(2) when COUNT_UP,
-        patterns(3) when COUNT_DOWN,
-        patterns(4) when CUSTOM,
+        patterns(1) when SHIFT_RIGHT,
+        patterns(2) when SHIFT_LEFT,
+        patterns(3) when COUNT_UP,
+        patterns(4) when COUNT_DOWN,
+        patterns(5) when CUSTOM,
         b"1111111"  when others;
 
 
 -- Toggle the "heartbeat" LED every second
-heartbeat: process(clk)
-    variable ticks : natural;
+heartbeat: process(pattern_clocks(0), reset)
 begin
     if reset then
         LED_hw(7) <= '0';
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
-        LED_hw(7) <= not LED_hw(7);
-        ticks := 0;
     else
-        ticks := ticks + 1;
+        LED_hw(7) <= not LED_hw(7);
     end if;
 end process;
 
 
 -- Pattern state machine
+-- NOTE: Uses its own counter system, because the required 1-second window is
+-- asynchronous to the 1-second heartbeat
 pattern_fsm: process(clk)
     variable ticks : natural;
 begin
@@ -102,7 +117,7 @@ begin
         else                 next_pattern <= current_pattern;
         end if;
     elsif current_pattern = SWITCH then
-        if ticks = (to_integer(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
+        if ticks = (unsigned(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
             current_pattern <= next_pattern;
             ticks := 0;
         else
@@ -115,81 +130,64 @@ end process;
 -- Pattern-generation state machines
 
 -- One LED, shifting right
-shift_right_fsm: process(clk)
-    alias pattern is patterns(0);
-    variable ticks : natural;
+shift_right_fsm: process(pattern_clocks(1), reset)
+    alias pattern_clock is pattern_clocks(1);
+    alias pattern is patterns(1);
 begin
     if reset then
         pattern <= b"1000000";
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 2) / 2**4 - 1 then
+    elsif rising_edge(pattern_clock) then
         pattern <= std_logic_vector(unsigned(pattern) ror 1);
-        ticks := 0;
-    else
-        ticks := ticks + 1;
     end if;
 end process;
 
 -- Two LEDs, shifting left
-shift_left_fsm: process(clk)
-    alias pattern is patterns(1);
-    variable ticks : natural;
+shift_left_fsm: process(pattern_clocks(2), reset)
+    alias pattern_clock is pattern_clocks(2);
+    alias pattern is patterns(2);
 begin
     if reset then
         pattern <= b"0000011";
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 4) / 2**4 - 1 then
+    elsif rising_edge(pattern_clock) then
         pattern <= std_logic_vector(unsigned(pattern) rol 1);
-        ticks := 0;
-    else
-        ticks := ticks + 1;
     end if;
 end process;
 
 -- Binary up-counter
-count_up_fsm: process(clk)
-    alias pattern is patterns(2);
-    variable ticks : natural;
+count_up_fsm: process(pattern_clocks(3), reset)
+    alias pattern_clock is pattern_clocks(3);
+    alias pattern is patterns(3);
 begin
     if reset then
         pattern <= b"0000000";
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec * 2) / 2**4 - 1 then
+    elsif rising_edge(pattern_clock) then
         pattern <= pattern + 1;
-        ticks := 0;
-    else
-        ticks := ticks + 1;
     end if;
 end process;
 
 -- Binary down-counter
-count_down_fsm: process(clk)
-    alias pattern is patterns(3);
-    variable ticks : natural;
+count_down_fsm: process(pattern_clocks(4), reset)
+    alias pattern_clock is pattern_clocks(4);
+    alias pattern is patterns(4);
 begin
     if reset then
         pattern <= b"1111111";
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 8) / 2**4 - 1 then
+    elsif rising_edge(pattern_clock) then
         pattern <= pattern - 1;
-        ticks := 0;
-    else
-        ticks := ticks + 1;
     end if;
 end process;
 
 -- Custom pattern: KITT chaser lights
-custom_fsm: process(clk)
-    alias pattern is patterns(4);
-    variable ticks : natural;
+custom_fsm: process(pattern_clocks(5), reset)
+    alias pattern_clock is pattern_clocks(5);
+    alias pattern is patterns(5);
     variable full_pattern : std_logic_vector(8 downto 0);
     variable forward : std_logic;
 begin
     if reset then
         full_pattern := b"000000011";
         forward := '0';
-        ticks := 0;
-    elsif ticks = (to_integer(Base_rate) * SYS_CLKs_sec / 8) / 2**4 - 1 then
+    elsif rising_edge(pattern_clock) then
         -- Direction switching
         if full_pattern(full_pattern'left) then
             forward := '1';
@@ -202,9 +200,6 @@ begin
         else
             full_pattern := std_logic_vector(unsigned(full_pattern) rol 1);
         end if;
-        ticks := 0;
-    else
-        ticks := ticks + 1;
     end if;
     -- Cut off the two outermost bits, to produce a better-looking pattern
     pattern <= full_pattern(7 downto 1);
