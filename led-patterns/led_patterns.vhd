@@ -96,7 +96,7 @@ begin
 end process;
 
 
--- Pattern state machine
+-- Pattern-control state machine
 -- NOTE: Uses its own counter system, because the required 1-second window is
 -- asynchronous to the 1-second heartbeat
 pattern_fsm: process(clk)
@@ -130,80 +130,49 @@ end process;
 -- Pattern-generation state machines
 
 -- One LED, shifting right
-shift_right_fsm: process(pattern_clocks(1), reset)
-    alias pattern_clock is pattern_clocks(1);
-    alias pattern is patterns(1);
-begin
-    if reset then
-        pattern <= b"1000000";
-    elsif rising_edge(pattern_clock) then
-        pattern <= std_logic_vector(unsigned(pattern) ror 1);
-    end if;
-end process;
+shift_right_pattern: configuration work.PatternRight
+    generic map (WIDTH => 7)
+    port map (
+        clk => pattern_clocks(1),
+        reset => reset,
+        preset => b"1000000",
+        pattern => patterns(1));
 
 -- Two LEDs, shifting left
-shift_left_fsm: process(pattern_clocks(2), reset)
-    alias pattern_clock is pattern_clocks(2);
-    alias pattern is patterns(2);
-begin
-    if reset then
-        pattern <= b"0000011";
-    elsif rising_edge(pattern_clock) then
-        pattern <= std_logic_vector(unsigned(pattern) rol 1);
-    end if;
-end process;
+shift_left_pattern: configuration work.PatternLeft
+    generic map (WIDTH => 7)
+    port map (
+        clk => pattern_clocks(2),
+        reset => reset,
+        preset => b"0000011",
+        pattern => patterns(2));
 
 -- Binary up-counter
-count_up_fsm: process(pattern_clocks(3), reset)
-    alias pattern_clock is pattern_clocks(3);
-    alias pattern is patterns(3);
-begin
-    if reset then
-        pattern <= b"0000000";
-    elsif rising_edge(pattern_clock) then
-        pattern <= pattern + 1;
-    end if;
-end process;
+count_up_pattern: configuration work.PatternUp
+    generic map (WIDTH => 7)
+    port map (
+        clk => pattern_clocks(3),
+        reset => reset,
+        preset => b"0000000",
+        pattern => patterns(3));
 
 -- Binary down-counter
-count_down_fsm: process(pattern_clocks(4), reset)
-    alias pattern_clock is pattern_clocks(4);
-    alias pattern is patterns(4);
-begin
-    if reset then
-        pattern <= b"1111111";
-    elsif rising_edge(pattern_clock) then
-        pattern <= pattern - 1;
-    end if;
-end process;
+count_down_pattern: configuration work.PatternDown
+    generic map (WIDTH => 7)
+    port map (
+        clk => pattern_clocks(4),
+        reset => reset,
+        preset => b"1111111",
+        pattern => patterns(4));
 
 -- Custom pattern: KITT chaser lights
-custom_fsm: process(pattern_clocks(5), reset)
-    alias pattern_clock is pattern_clocks(5);
-    alias pattern is patterns(5);
-    variable full_pattern : std_logic_vector(8 downto 0);
-    variable forward : std_logic;
-begin
-    if reset then
-        full_pattern := b"000000011";
-        forward := '0';
-    elsif rising_edge(pattern_clock) then
-        -- Direction switching
-        if full_pattern(full_pattern'left) then
-            forward := '1';
-        elsif full_pattern(full_pattern'right) then
-            forward := '0';
-        end if;
-        -- Pattern rotation
-        if forward then
-            full_pattern := std_logic_vector(unsigned(full_pattern) ror 1);
-        else
-            full_pattern := std_logic_vector(unsigned(full_pattern) rol 1);
-        end if;
-    end if;
-    -- Cut off the two outermost bits, to produce a better-looking pattern
-    pattern <= full_pattern(7 downto 1);
-end process;
+kitt_pattern: entity work.PatternGenerator(PatternKITT)
+    generic map (WIDTH => 9)
+    port map (
+        clk => pattern_clocks(5),
+        reset => reset,
+        preset => b"000000011",
+        pattern(7 downto 1) => patterns(5));
 
 
 end architecture;

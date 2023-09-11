@@ -44,6 +44,9 @@ set_global_assignment -name ORIGINAL_QUARTUS_VERSION 21.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "22:44:38  SEPTEMBER 09, 2023"
 set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name SMART_RECOMPILE ON
+set_global_assignment -name VHDL_FILE "../led-patterns/pattern_cores.vhd"
+set_global_assignment -name VHDL_FILE "../led-patterns/pattern_generator.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/clock_generator.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/led_patterns.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/synchronizer.vhd"
@@ -53,7 +56,6 @@ set_global_assignment -name VHDL_FILE "../led-patterns/conditioner.vhd"
 set_global_assignment -name VHDL_FILE DE10_Top_Level.vhd
 set_global_assignment -name VHDL_FILE common.vhd
 set_global_assignment -name SDC_FILE ../helpers/DE10_nano.sdc
-set_global_assignment -name SMART_RECOMPILE ON
 
 # Pin & Location Assignments
 # ==========================
