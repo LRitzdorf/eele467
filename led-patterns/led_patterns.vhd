@@ -2,6 +2,7 @@
 -- 09/09/2023
 -- EELE 467, Lab 4
 
+use work.common.all;
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
