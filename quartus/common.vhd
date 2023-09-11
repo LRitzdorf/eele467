@@ -12,5 +12,6 @@ use ieee.std_logic_unsigned.all;
 package common is
 
     type slv_2d is array(integer range <>) of std_logic_vector;
+    type byte_2d is array(integer range <>) of std_logic_vector(7 downto 0);
 
 end package;
