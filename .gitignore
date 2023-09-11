@@ -118,3 +118,6 @@ transcript*
 sc_dpiheader.h
 vsim.dbg
 
+# draw.io XML files
+*.drawio
+
