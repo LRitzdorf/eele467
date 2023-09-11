@@ -41,7 +41,7 @@ architecture LED_Patterns_Arch of LED_Patterns is
     -- Pattern generator state machine signals
     signal pattern_clocks : std_logic_vector(5 downto 0);
     type pattern_t is (SWITCH, SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, CUSTOM);
-    signal current_pattern, next_pattern : pattern_t;
+    signal current_pattern, last_pattern : pattern_t;
 
     -- Internal pattern signals
     type pattern_array_t is array(natural range <>) of std_logic_vector(6 downto 0);
@@ -107,18 +107,18 @@ begin
         ticks := 0;
     elsif PB then
         current_pattern <= SWITCH;
-        -- Quartus doesn't like select statements inside of processes, though
-        -- they should be valid in VHDL-2008
-        if    SW = x"0" then next_pattern <= SHIFT_RIGHT;
-        elsif SW = x"1" then next_pattern <= SHIFT_LEFT;
-        elsif SW = x"2" then next_pattern <= COUNT_UP;
-        elsif SW = x"3" then next_pattern <= COUNT_DOWN;
-        elsif SW = x"4" then next_pattern <= CUSTOM;
-        else                 next_pattern <= current_pattern;
-        end if;
+        last_pattern <= current_pattern;
     elsif current_pattern = SWITCH then
         if ticks = (unsigned(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
-            current_pattern <= next_pattern;
+            -- Quartus doesn't like select statements inside of processes, even
+            -- though they should be valid in VHDL-2008
+            if    SW = x"0" then current_pattern <= SHIFT_RIGHT;
+            elsif SW = x"1" then current_pattern <= SHIFT_LEFT;
+            elsif SW = x"2" then current_pattern <= COUNT_UP;
+            elsif SW = x"3" then current_pattern <= COUNT_DOWN;
+            elsif SW = x"4" then current_pattern <= CUSTOM;
+            else                 current_pattern <= last_pattern;
+            end if;
             ticks := 0;
         else
             ticks := ticks + 1;
