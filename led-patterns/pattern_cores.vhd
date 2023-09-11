@@ -19,22 +19,22 @@ end entity;
 
 -- Individual pattern cores
 
-architecture up_count of pattern_core is
+architecture up_count_arch of pattern_core is
 begin
     next_step <= prev_step + 1;
 end architecture;
 
-architecture down_count of pattern_core is
+architecture down_count_arch of pattern_core is
 begin
     next_step <= prev_step - 1;
 end architecture;
 
-architecture left_rotate of pattern_core is
+architecture left_rotate_arch of pattern_core is
 begin
     next_step <= std_logic_vector(unsigned(prev_step) rol 1);
 end architecture;
 
-architecture right_rotate of pattern_core is
+architecture right_rotate_arch of pattern_core is
 begin
     next_step <= std_logic_vector(unsigned(prev_step) ror 1);
 end architecture;
@@ -42,41 +42,41 @@ end architecture;
 
 -- Configurations to select each pattern core
 
-configuration PatternUp of PatternGenerator is
+configuration PatternUp_Conf of PatternGenerator is
     for PatternGenerator_Arch
         for pattern_step: pattern_core
-            use entity work.pattern_core(up_count);
+            use entity work.pattern_core(up_count_arch);
         end for;
     end for;
 end configuration;
 
-configuration PatternDown of PatternGenerator is
+configuration PatternDown_Conf of PatternGenerator is
     for PatternGenerator_Arch
         for pattern_step: pattern_core
-            use entity work.pattern_core(down_count);
+            use entity work.pattern_core(down_count_arch);
         end for;
     end for;
 end configuration;
 
-configuration PatternLeft of PatternGenerator is
+configuration PatternLeft_Conf of PatternGenerator is
     for PatternGenerator_Arch
         for pattern_step: pattern_core
-            use entity work.pattern_core(left_rotate);
+            use entity work.pattern_core(left_rotate_arch);
         end for;
     end for;
 end configuration;
 
-configuration PatternRight of PatternGenerator is
+configuration PatternRight_Conf of PatternGenerator is
     for PatternGenerator_Arch
         for pattern_step: pattern_core
-            use entity work.pattern_core(right_rotate);
+            use entity work.pattern_core(right_rotate_arch);
         end for;
     end for;
 end configuration;
 
 
 -- And a full replacement architecture for a sequential pattern
-architecture PatternKITT of PatternGenerator is
+architecture PatternKITT_Arch of PatternGenerator is
     signal forward : std_logic;
 begin
     process(clk)

@@ -130,7 +130,7 @@ end process;
 -- Pattern-generation state machines
 
 -- One LED, shifting right
-shift_right_pattern: configuration work.PatternRight
+shift_right_pattern: configuration work.PatternRight_Conf
     generic map (WIDTH => 7)
     port map (
         clk => pattern_clocks(1),
@@ -139,7 +139,7 @@ shift_right_pattern: configuration work.PatternRight
         pattern => patterns(1));
 
 -- Two LEDs, shifting left
-shift_left_pattern: configuration work.PatternLeft
+shift_left_pattern: configuration work.PatternLeft_Conf
     generic map (WIDTH => 7)
     port map (
         clk => pattern_clocks(2),
@@ -148,7 +148,7 @@ shift_left_pattern: configuration work.PatternLeft
         pattern => patterns(2));
 
 -- Binary up-counter
-count_up_pattern: configuration work.PatternUp
+count_up_pattern: configuration work.PatternUp_Conf
     generic map (WIDTH => 7)
     port map (
         clk => pattern_clocks(3),
@@ -157,7 +157,7 @@ count_up_pattern: configuration work.PatternUp
         pattern => patterns(3));
 
 -- Binary down-counter
-count_down_pattern: configuration work.PatternDown
+count_down_pattern: configuration work.PatternDown_Conf
     generic map (WIDTH => 7)
     port map (
         clk => pattern_clocks(4),
@@ -166,7 +166,7 @@ count_down_pattern: configuration work.PatternDown
         pattern => patterns(4));
 
 -- Custom pattern: KITT chaser lights
-kitt_pattern: entity work.PatternGenerator(PatternKITT)
+kitt_pattern: entity work.PatternGenerator(PatternKITT_Arch)
     generic map (WIDTH => 9)
     port map (
         clk => pattern_clocks(5),
