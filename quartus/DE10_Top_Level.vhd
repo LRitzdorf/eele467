@@ -102,7 +102,7 @@ begin
     patterns: entity work.LED_Patterns
         generic map (SYS_CLKs_sec => 50000)
         port map (clk => FPGA_CLK1_50,
-                  reset => KEY(0),
+                  reset => not KEY(0),
                   PB => KEY1,
                   SW => SW,
                   HPS_LED_control => '0',
