@@ -39,12 +39,14 @@ clock_fsm_array: for N in CLK_SCALES'range generate
         if reset then
             gen_clocks(N) <= '0';
             ticks := 0;
-        elsif ticks = ((unsigned(CLK_SCALES(N)) * Base_rate * SYS_CLKs_sec) / 2**8) - 1 then
-            gen_clocks(N) <= '1';
-            ticks := 0;
-        else
-            gen_clocks(N) <= '0';
-            ticks := ticks + 1;
+        elsif rising_edge(clk) then
+            if ticks = ((unsigned(CLK_SCALES(N)) * Base_rate * SYS_CLKs_sec) / 2**8) - 1 then
+                gen_clocks(N) <= '1';
+                ticks := 0;
+            else
+                gen_clocks(N) <= '0';
+                ticks := ticks + 1;
+            end if;
         end if;
     end process;
 end generate;

@@ -79,12 +79,12 @@ end configuration;
 architecture PatternKITT_Arch of PatternGenerator is
     signal forward : std_logic;
 begin
-    process(clk)
+    process(clk, reset)
     begin
         if reset then
             forward <= '0';
             pattern <= preset;
-        else
+        elsif rising_edge(clk) then
             -- Direction switching
             if pattern(pattern'left) then
                 forward <= '1';

@@ -90,7 +90,7 @@ heartbeat: process(pattern_clocks(0), reset)
 begin
     if reset then
         LED_hw(7) <= '0';
-    else
+    elsif rising_edge(pattern_clocks(0)) then
         LED_hw(7) <= not LED_hw(7);
     end if;
 end process;
@@ -105,23 +105,25 @@ begin
     if reset then
         current_pattern <= SHIFT_RIGHT;
         ticks := 0;
-    elsif PB then
-        current_pattern <= SWITCH;
-        last_pattern <= current_pattern;
-    elsif current_pattern = SWITCH then
-        if ticks = (unsigned(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
-            -- Quartus doesn't like select statements inside of processes, even
-            -- though they should be valid in VHDL-2008
-            if    SW = x"0" then current_pattern <= SHIFT_RIGHT;
-            elsif SW = x"1" then current_pattern <= SHIFT_LEFT;
-            elsif SW = x"2" then current_pattern <= COUNT_UP;
-            elsif SW = x"3" then current_pattern <= COUNT_DOWN;
-            elsif SW = x"4" then current_pattern <= CUSTOM;
-            else                 current_pattern <= last_pattern;
+    elsif rising_edge(clk) then
+        if PB then
+            current_pattern <= SWITCH;
+            last_pattern <= current_pattern;
+        elsif current_pattern = SWITCH then
+            if ticks = (unsigned(Base_rate) * SYS_CLKs_sec) / 2**4 - 1 then
+                -- Quartus doesn't like select statements inside of processes, even
+                -- though they should be valid in VHDL-2008
+                if    SW = x"0" then current_pattern <= SHIFT_RIGHT;
+                elsif SW = x"1" then current_pattern <= SHIFT_LEFT;
+                elsif SW = x"2" then current_pattern <= COUNT_UP;
+                elsif SW = x"3" then current_pattern <= COUNT_DOWN;
+                elsif SW = x"4" then current_pattern <= CUSTOM;
+                else                 current_pattern <= last_pattern;
+                end if;
+                ticks := 0;
+            else
+                ticks := ticks + 1;
             end if;
-            ticks := 0;
-        else
-            ticks := ticks + 1;
         end if;
     end if;
 end process;
