@@ -111,7 +111,7 @@ begin
             last_pattern <= current_pattern;
         elsif current_pattern = SWITCH then
             limit := to_integer(unsigned(Base_rate)) * SYS_CLKs_sec;
-            if ticks = (limit / 2**4) - 1 then
+            if ticks >= (limit / 2**4) - 1 then
                 -- Quartus doesn't like select statements inside of processes, even
                 -- though they should be valid in VHDL-2008
                 if    SW = x"0" then current_pattern <= SHIFT_RIGHT;
