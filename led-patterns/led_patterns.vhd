@@ -99,7 +99,7 @@ end process;
 -- Pattern-control state machine
 -- NOTE: Uses its own counter system, because the required 1-second window is
 -- asynchronous to the 1-second heartbeat
-pattern_fsm: process(clk)
+pattern_fsm: process(clk, reset)
     variable ticks, limit : natural;
 begin
     if reset then

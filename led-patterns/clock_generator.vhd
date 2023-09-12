@@ -33,7 +33,7 @@ begin
 
 -- Clock generator state-machine array
 clock_fsm_array: for N in CLK_SCALES'range generate
-    process(clk)
+    process(clk, reset)
         variable ticks, limit : natural;
     begin
         if reset then
