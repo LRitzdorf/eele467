@@ -43,12 +43,12 @@ clock_fsm_array: for N in CLK_SCALES'range generate
             ticks := to_unsigned(0, ticks'length);
         elsif rising_edge(clk) then
             limit := unsigned(CLK_SCALES(N)) * Base_rate * SYS_CLKs_sec;
-            if ticks >= (limit / 2**8) - 1 then
-                gen_clocks(N) <= '1';
-                ticks := to_unsigned(0, ticks'length);
-            else
+            if ticks < (limit / 2**8) - 1 then
                 gen_clocks(N) <= '0';
                 ticks := ticks + 1;
+            else
+                gen_clocks(N) <= '1';
+                ticks := to_unsigned(0, ticks'length);
             end if;
         end if;
     end process;
