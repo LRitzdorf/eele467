@@ -100,7 +100,7 @@ begin
 
     -- Instantiate LED pattern driver
     patterns: entity work.LED_Patterns
-        generic map (SYS_CLKs_sec => 50000)
+        generic map (SYS_CLKs_sec => 50000000)
         port map (clk => FPGA_CLK1_50,
                   reset => not KEY(0),
                   PB => KEY1,
