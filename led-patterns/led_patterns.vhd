@@ -100,8 +100,11 @@ end process;
 -- NOTE: Uses its own counter system, because the required 1-second window is
 -- asynchronous to the 1-second heartbeat
 pattern_fsm: process(clk, reset)
-    variable ticks, limit : unsigned(
+    variable limit : unsigned(
         SYS_CLKs_sec'length + Base_rate'length - 1
+        downto 0);
+    variable ticks : unsigned(
+        SYS_CLKs_sec'length + Base_rate'length - 4 - 1
         downto 0);
 begin
     if reset then
@@ -113,7 +116,7 @@ begin
             last_pattern <= current_pattern;
         elsif current_pattern = SWITCH then
             limit := unsigned(Base_rate) * SYS_CLKs_sec;
-            if ticks >= (limit / 2**4) - 1 then
+            if ticks >= limit(limit'high downto limit'low + 4) - 1 then
                 -- Quartus doesn't like select statements inside of processes, even
                 -- though they should be valid in VHDL-2008
                 if    SW = x"0" then current_pattern <= SHIFT_RIGHT;
