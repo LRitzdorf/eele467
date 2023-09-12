@@ -77,19 +77,19 @@ end configuration;
 
 -- And a full replacement architecture for a sequential pattern
 architecture PatternKITT_Arch of PatternGenerator is
-    signal forward : std_logic;
 begin
     process(clk, reset)
+        variable forward : std_logic;
     begin
         if reset then
-            forward <= '0';
+            forward := '0';
             pattern <= preset;
         elsif rising_edge(clk) then
             -- Direction switching
             if pattern(pattern'left) then
-                forward <= '1';
+                forward := '1';
             elsif pattern(pattern'right) then
-                forward <= '0';
+                forward := '0';
             end if;
             -- Pattern rotation
             if forward then
