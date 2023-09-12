@@ -13,7 +13,7 @@ use ieee.std_logic_unsigned.all;
 entity ClockGenerator is
     generic (
         -- Number of system clock cycles per second
-        SYS_CLKs_sec : natural;
+        SYS_CLKs_sec : unsigned;
         -- Scale factors for each clock (array of UQ4.4)
         CLK_SCALES   : byte_2d);
     port (
@@ -34,16 +34,18 @@ begin
 -- Clock generator state-machine array
 clock_fsm_array: for N in CLK_SCALES'range generate
     process(clk, reset)
-        variable ticks, limit : natural;
+        variable ticks, limit : unsigned(
+            SYS_CLKs_sec'length + Base_rate'length + CLK_SCALES(N)'length - 1
+            downto 0);
     begin
         if reset then
             gen_clocks(N) <= '0';
-            ticks := 0;
+            ticks := to_unsigned(0, ticks'length);
         elsif rising_edge(clk) then
-            limit := to_integer(unsigned(CLK_SCALES(N))) * to_integer(Base_rate) * SYS_CLKs_sec;
+            limit := unsigned(CLK_SCALES(N)) * Base_rate * SYS_CLKs_sec;
             if ticks >= (limit / 2**8) - 1 then
                 gen_clocks(N) <= '1';
-                ticks := 0;
+                ticks := to_unsigned(0, ticks'length);
             else
                 gen_clocks(N) <= '0';
                 ticks := ticks + 1;

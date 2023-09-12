@@ -13,7 +13,7 @@ use ieee.std_logic_unsigned.all;
 entity LED_Patterns is
     generic (
         -- Number of system clock cycles per second
-        SYS_CLKs_sec    : natural);
+        SYS_CLKs_sec    : unsigned);
     port (
         clk   : in std_logic;
         -- NOTE: Active high reset
@@ -100,17 +100,19 @@ end process;
 -- NOTE: Uses its own counter system, because the required 1-second window is
 -- asynchronous to the 1-second heartbeat
 pattern_fsm: process(clk, reset)
-    variable ticks, limit : natural;
+    variable ticks, limit : unsigned(
+        SYS_CLKs_sec'length + Base_rate'length - 1
+        downto 0);
 begin
     if reset then
         current_pattern <= SHIFT_RIGHT;
-        ticks := 0;
+        ticks := to_unsigned(0, ticks'length);
     elsif rising_edge(clk) then
         if PB then
             current_pattern <= SWITCH;
             last_pattern <= current_pattern;
         elsif current_pattern = SWITCH then
-            limit := to_integer(unsigned(Base_rate)) * SYS_CLKs_sec;
+            limit := unsigned(Base_rate) * SYS_CLKs_sec;
             if ticks >= (limit / 2**4) - 1 then
                 -- Quartus doesn't like select statements inside of processes, even
                 -- though they should be valid in VHDL-2008
@@ -121,7 +123,7 @@ begin
                 elsif SW = x"4" then current_pattern <= CUSTOM;
                 else                 current_pattern <= last_pattern;
                 end if;
-                ticks := 0;
+                ticks := to_unsigned(0, ticks'length);
             else
                 ticks := ticks + 1;
             end if;
