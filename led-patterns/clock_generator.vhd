@@ -34,13 +34,14 @@ begin
 -- Clock generator state-machine array
 clock_fsm_array: for N in CLK_SCALES'range generate
     process(clk)
-        variable ticks : natural;
+        variable ticks, limit : natural;
     begin
         if reset then
             gen_clocks(N) <= '0';
             ticks := 0;
         elsif rising_edge(clk) then
-            if ticks = ((unsigned(CLK_SCALES(N)) * Base_rate * SYS_CLKs_sec) / 2**8) - 1 then
+            limit := to_integer(unsigned(CLK_SCALES(N))) * to_integer(Base_rate) * SYS_CLKs_sec;
+            if ticks = (limit / 2**8) - 1 then
                 gen_clocks(N) <= '1';
                 ticks := 0;
             else
