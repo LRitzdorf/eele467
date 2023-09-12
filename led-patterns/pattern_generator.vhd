@@ -23,6 +23,7 @@ entity PatternGenerator is
 end entity;
 
 
+-- Pattern generator architecture
 architecture PatternGenerator_Arch of PatternGenerator is
 
     component pattern_core is
@@ -32,7 +33,7 @@ architecture PatternGenerator_Arch of PatternGenerator is
             next_step : out std_logic_vector(WIDTH-1 downto 0));
     end component;
 
-    signal last_pattern, next_pattern : std_logic_vector(WIDTH-1 downto 0);
+    signal prev_step, next_step : std_logic_vector(WIDTH-1 downto 0);
 
 begin
 
@@ -40,18 +41,18 @@ begin
     pattern_step: pattern_core
         generic map(WIDTH)
         port map(
-            prev_step => last_pattern,
-            next_step => next_pattern);
+            prev_step,
+            next_step);
 
     -- Pattern latch
     pattern_fsm: process(clk, reset)
     begin
         if reset then
-            last_pattern <= preset;
+            prev_step <= preset;
         elsif rising_edge(clk) then
-            last_pattern <= next_pattern;
+            prev_step <= next_step;
         end if;
     end process;
-    pattern <= last_pattern;
+    pattern <= prev_step;
 
 end architecture;

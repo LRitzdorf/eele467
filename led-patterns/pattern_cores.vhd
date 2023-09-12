@@ -44,7 +44,7 @@ end architecture;
 
 configuration PatternUp_Conf of PatternGenerator is
     for PatternGenerator_Arch
-        for pattern_step: pattern_core
+        for all: pattern_core
             use entity work.pattern_core(up_count_arch);
         end for;
     end for;
@@ -52,7 +52,7 @@ end configuration;
 
 configuration PatternDown_Conf of PatternGenerator is
     for PatternGenerator_Arch
-        for pattern_step: pattern_core
+        for all: pattern_core
             use entity work.pattern_core(down_count_arch);
         end for;
     end for;
@@ -60,7 +60,7 @@ end configuration;
 
 configuration PatternLeft_Conf of PatternGenerator is
     for PatternGenerator_Arch
-        for pattern_step: pattern_core
+        for all: pattern_core
             use entity work.pattern_core(left_rotate_arch);
         end for;
     end for;
@@ -68,7 +68,7 @@ end configuration;
 
 configuration PatternRight_Conf of PatternGenerator is
     for PatternGenerator_Arch
-        for pattern_step: pattern_core
+        for all: pattern_core
             use entity work.pattern_core(right_rotate_arch);
         end for;
     end for;
