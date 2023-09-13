@@ -39,13 +39,13 @@ architecture LED_Patterns_Arch of LED_Patterns is
     signal LED_hw : std_logic_vector(7 downto 0);
 
     -- Pattern generator state machine signals
-    signal pattern_clocks : std_logic_vector(5 downto 0);
+    signal pattern_clocks : std_logic_vector(0 to 5);
     type pattern_t is (SWITCH, SHIFT_RIGHT, SHIFT_LEFT, COUNT_UP, COUNT_DOWN, CUSTOM);
     signal current_pattern, last_pattern : pattern_t;
 
     -- Internal pattern signals
     type pattern_array_t is array(natural range <>) of std_logic_vector(6 downto 0);
-    signal patterns : pattern_array_t(5 downto 1);
+    signal patterns : pattern_array_t(1 to 5);
 
 begin
 
