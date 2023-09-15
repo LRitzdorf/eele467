@@ -53,9 +53,11 @@ set_global_assignment -name VHDL_FILE "../led-patterns/synchronizer.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/onepulse.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/debouncer.vhd"
 set_global_assignment -name VHDL_FILE "../led-patterns/conditioner.vhd"
+set_global_assignment -name SIGNALTAP_FILE signaltap_0.stp
 set_global_assignment -name VHDL_FILE DE10_Top_Level.vhd
 set_global_assignment -name VHDL_FILE common.vhd
 set_global_assignment -name SDC_FILE ../helpers/DE10_nano.sdc
+set_global_assignment -name SLD_FILE db/signaltap_0_auto_stripped.stp
 
 # Pin & Location Assignments
 # ==========================
@@ -188,6 +190,11 @@ set_global_assignment -name TOP_LEVEL_ENTITY DE10_Top_Level
 set_global_assignment -name DEVICE 5CSEBA6U23I7
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
 
+# Signal Tap Assignments
+# ======================
+set_global_assignment -name ENABLE_SIGNALTAP ON
+set_global_assignment -name USE_SIGNALTAP_FILE signaltap_0.stp
+
 # Power Estimation Assignments
 # ============================
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
@@ -252,6 +259,128 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 
 # end EDA_TOOL_SETTINGS(eda_board_design_signal_integrity)
 # --------------------------------------------------------
+
+# start AUTO_INSERT_SLD_NODE_ENTITY(signaltap_0)
+# ----------------------------------------------
+
+	# Signal Tap Assignments
+	# ======================
+	set_global_assignment -name SLD_NODE_CREATOR_ID 110 -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_ENTITY_NAME sld_signaltap -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to "LED_Patterns:patterns|ClockGenerator:clockgen|gen_clocks[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[9] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[0]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[10] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[1]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[11] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[2]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[12] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[3]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[13] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[4]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[14] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[15] -to "LED_Patterns:patterns|PatternGenerator:count_down_pattern|pattern[6]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[16] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[0]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[17] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[1]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[18] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[2]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[19] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[3]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[20] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[4]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[21] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[22] -to "LED_Patterns:patterns|PatternGenerator:count_up_pattern|pattern[6]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[23] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[0]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[24] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[1]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[25] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[2]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[26] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[3]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[27] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[4]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[28] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[29] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[6]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[30] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[7]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[31] -to "LED_Patterns:patterns|PatternGenerator:kitt_pattern|pattern[8]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[32] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[0]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[33] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[1]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[34] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[2]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[35] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[3]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[36] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[4]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[37] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[38] -to "LED_Patterns:patterns|PatternGenerator:shift_left_pattern|pattern[6]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[39] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[0]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[40] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[1]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[41] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[2]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[42] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[3]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[43] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[4]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[44] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[5]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[45] -to "LED_Patterns:patterns|PatternGenerator:shift_right_pattern|pattern[6]" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[46] -to "LED_Patterns:patterns|current_pattern.COUNT_DOWN" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[47] -to "LED_Patterns:patterns|current_pattern.COUNT_UP" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[48] -to "LED_Patterns:patterns|current_pattern.CUSTOM" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[49] -to "LED_Patterns:patterns|current_pattern.SHIFT_LEFT" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[50] -to "LED_Patterns:patterns|current_pattern.SHIFT_RIGHT" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[51] -to "LED_Patterns:patterns|current_pattern.SWITCH" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_RAM_BLOCK_TYPE=AUTO" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=52" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=1" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_BITS=52" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_INFO=805334528" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_POWER_UP_TRIGGER=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=000000000000000000000000" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=24" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_INVERSION_MASK_LENGTH=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SEGMENT_SIZE=128" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ATTRIBUTE_MEM_MODE=OFF" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STATE_FLOW_USE_GENERATED=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STATE_BITS=11" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_BUFFER_FULL_STOP=1" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_CURRENT_RESOURCE_WIDTH=1" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INCREMENTAL_ROUTING=1" -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[1] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[2] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[3] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[4] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[5] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[9] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[16] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[17] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[18] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[19] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[20] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[21] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[22] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[24] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[25] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[27] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[28] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[30] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to signaltap_0|vcc -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL=1" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=128" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_IN_ENABLED=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_PIPELINE=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_RAM_PIPELINE=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_COUNTER_PIPELINE=0" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=basic,1," -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL_PIPELINE=1" -section_id signaltap_0
+	set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to "Conditioner:conditioner|Debouncer:\\parallel_conditioning:0:debouncer|output" -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[0] -to "Conditioner:conditioner|Debouncer:\\parallel_conditioning:0:debouncer|output" -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[0] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[10] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[12] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[13] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[1] -to LED[0] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[2] -to LED[1] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[3] -to LED[2] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[4] -to LED[3] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[5] -to LED[4] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[6] -to LED[5] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[7] -to LED[6] -section_id signaltap_0
+	set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[8] -to LED[7] -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[6] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[7] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[8] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[11] -to signaltap_0|vcc -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[14] -to signaltap_0|gnd -section_id signaltap_0
+	set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[15] -to signaltap_0|gnd -section_id signaltap_0
+
+# end AUTO_INSERT_SLD_NODE_ENTITY(signaltap_0)
+# --------------------------------------------
 
 # ----------------------------
 # start ENTITY(DE10_Top_Level)
