@@ -332,6 +332,8 @@ architecture DE10Nano_arch of DE10Nano_System is
 
     signal reset                        : std_logic;
 
+    signal next_led_pattern             : std_logic;
+
 begin
 
     ---------------------------------------------------------------------------------------------
@@ -474,10 +476,18 @@ begin
         memory_mem_odt                      => HPS_DDR3_ODT,
         memory_mem_dm                       => HPS_DDR3_DM,
         memory_oct_rzqin                    => HPS_DDR3_RZQ,
-        led_patterns_pushbutton             => KEY(0),
+        led_patterns_pushbutton             => next_led_pattern,
         led_patterns_switches               => SW,
         led_patterns_leds                   => LED
     );
+
+    -- Instantiate push-button signal conditioner
+    conditioner: entity work.Conditioner
+        generic map (WIDTH => 1)
+        port map (clk => FPGA_CLK1_50,
+                  reset => not hps_cold_reset,
+                  input(0) => KEY(1),
+                  output(0) => next_led_pattern);
 
 
     ---------------------------------------------------------------------------------------------
