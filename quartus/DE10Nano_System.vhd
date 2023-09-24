@@ -282,7 +282,10 @@ architecture DE10Nano_arch of DE10Nano_System is
             memory_mem_odt                      : out   std_logic;                                        -- mem_odt
             memory_mem_dm                       : out   std_logic_vector(3 downto 0);                     -- mem_dm
             memory_oct_rzqin                    : in    std_logic                     := 'X';             -- oct_rzqin
-            reset_reset_n                       : in    std_logic                     := 'X'              -- reset_n
+            reset_reset_n                       : in    std_logic                     := 'X';             -- reset_n
+            led_patterns_pushbutton             : in    std_logic                     := 'X';             -- pushbutton
+            led_patterns_switches               : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- switches
+            led_patterns_leds                   : out   std_logic_vector(7 downto 0)                      -- leds
         );
     end component soc_system;
 
@@ -470,7 +473,10 @@ begin
         memory_mem_dqs_n                    => HPS_DDR3_DQS_N,
         memory_mem_odt                      => HPS_DDR3_ODT,
         memory_mem_dm                       => HPS_DDR3_DM,
-        memory_oct_rzqin                    => HPS_DDR3_RZQ
+        memory_oct_rzqin                    => HPS_DDR3_RZQ,
+        led_patterns_pushbutton             => KEY(0),
+        led_patterns_switches               => SW,
+        led_patterns_leds                   => LED
     );
 
 
@@ -497,7 +503,6 @@ begin
     -------------------------------------------------------
     -- DE10-Nano Board (unused output signals)
     -------------------------------------------------------
-    LED               <= (others => '0');
     Audio_Mini_GPIO_0 <= (others => 'Z');
     Audio_Mini_GPIO_1 <= (others => 'Z');
     ARDUINO_IO        <= (others => 'Z');

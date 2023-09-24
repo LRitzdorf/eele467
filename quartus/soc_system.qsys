@@ -9,6 +9,22 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element HPS_LED_Patterns_0
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
+   element HPS_LED_Patterns_0.s1
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
    element PLL_using_AD1939_MCLK
    {
       datum _sortIndex
@@ -44,7 +60,7 @@
       }
       datum baseAddress
       {
-         value = "0";
+         value = "16";
          type = "String";
       }
    }
@@ -122,7 +138,7 @@
       }
       datum baseAddress
       {
-         value = "16";
+         value = "24";
          type = "String";
       }
    }
@@ -468,8 +484,18 @@
    internal="hps.spim0_sclk_out"
    type="clock"
    dir="start" />
+ <interface
+   name="led_patterns"
+   internal="HPS_LED_Patterns_0.export"
+   type="conduit"
+   dir="end" />
  <interface name="memory" internal="hps.memory" type="conduit" dir="end" />
  <interface name="reset" internal="clk_hps.clk_in_reset" type="reset" dir="end" />
+ <module
+   name="HPS_LED_Patterns_0"
+   kind="HPS_LED_Patterns"
+   version="1.0"
+   enabled="1" />
  <module
    name="PLL_using_AD1939_MCLK"
    kind="altera_pll"
@@ -1306,7 +1332,7 @@
    start="hps.h2f_lw_axi_master"
    end="jtag_uart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0010" />
+  <parameter name="baseAddress" value="0x0018" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1314,6 +1340,15 @@
    version="21.1"
    start="hps.h2f_lw_axi_master"
    end="SystemID.control_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0010" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="21.1"
+   start="hps.h2f_lw_axi_master"
+   end="HPS_LED_Patterns_0.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
@@ -1325,6 +1360,11 @@
    version="21.1"
    start="clk_hps.clk"
    end="onchip_memory.clk1" />
+ <connection
+   kind="clock"
+   version="21.1"
+   start="clk_hps.clk"
+   end="HPS_LED_Patterns_0.clock" />
  <connection
    kind="clock"
    version="21.1"
@@ -1372,6 +1412,11 @@
    version="21.1"
    start="clk_hps.clk_reset"
    end="PLL_using_AD1939_MCLK.reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_hps.clk_reset"
+   end="HPS_LED_Patterns_0.reset" />
  <connection
    kind="reset"
    version="21.1"
