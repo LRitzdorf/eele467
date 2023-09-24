@@ -1,3 +1,5 @@
+-- altera vhdl_input_version vhdl_2008
+
 -- Lucas Ritzdorf
 -- 09/23/2023
 -- EELE 467, Lab 6
