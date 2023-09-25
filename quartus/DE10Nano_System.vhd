@@ -486,7 +486,7 @@ begin
         generic map (WIDTH => 1)
         port map (clk => FPGA_CLK1_50,
                   reset => not hps_cold_reset,
-                  input(0) => KEY(1),
+                  input(0) => Push_Button(0),
                   output(0) => next_led_pattern);
 
 
