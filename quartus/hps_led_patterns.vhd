@@ -14,28 +14,29 @@ use ieee.std_logic_unsigned.all;
 -- HPS interface for LED Patterns module
 entity HPS_LED_Patterns is
     port (
-        clk   : in std_logic;
+        clk              : in    std_logic;
         -- NOTE: Active high reset
-        reset : in std_logic;
+        reset            : in    std_logic;
         -- Memory-mapped Avalon agent interface
-        avs_s1_read      : in  std_logic;
-        avs_s1_write     : in  std_logic;
-        avs_s1_address   : in  std_logic_vector(1 downto 0);
-        avs_s1_readdata  : out std_logic_vector(31 downto 0);
-        avs_s1_writedata : in  std_logic_vector(31 downto 0);
+        avs_s1_read      : in    std_logic;
+        avs_s1_write     : in    std_logic;
+        avs_s1_address   : in    std_logic_vector(1 downto 0);
+        avs_s1_readdata  : out   std_logic_vector(31 downto 0);
+        avs_s1_writedata : in    std_logic_vector(31 downto 0);
         -- Active high state-change signal
-        PB               : in  std_logic;
+        PB               : in    std_logic;
         -- Next-state selection switches
-        SW               : in  std_logic_vector(3 downto 0);
+        SW               : in    std_logic_vector(3 downto 0);
         -- LED outputs
-        LED              : out std_logic_vector(7 downto 0));
+        LED              : out   std_logic_vector(7 downto 0)
+    );
 end entity;
 
 
 architecture HPS_LED_Patterns_Arch of HPS_LED_Patterns is
 
     -- Number of system clock cycles per second
-    constant SYS_CLKs_sec  : unsigned := to_unsigned(50000000, 26);
+    constant SYS_CLKs_sec : unsigned := to_unsigned(50000000, 26);
 
     -- Avalon-mapped LED control registers
     signal HPS_LED_control : std_logic                    := '0';
@@ -45,7 +46,7 @@ architecture HPS_LED_Patterns_Arch of HPS_LED_Patterns is
 begin
 
     -- Manage reading from mapped registers
-    avalon_register_read : process(clk) is
+    avalon_register_read : process (clk) is
     begin
         if rising_edge(clk) and avs_s1_read = '1' then
             case avs_s1_address is
@@ -59,7 +60,7 @@ begin
     end process;
 
     -- Manage writing to mapped registers
-    avalon_register_write : process(clk, reset) is
+    avalon_register_write : process (clk, reset) is
     begin
         if reset then
             -- Reset all registers to their default values
@@ -78,15 +79,19 @@ begin
     end process;
 
     -- Instantiate the LED_Patterns component
-    patterns: entity work.LED_Patterns
-        generic map (SYS_CLKs_sec => to_unsigned(50000000, 26))
-        port map (clk,
-                  reset,
-                  PB,
-                  SW,
-                  HPS_LED_control,
-                  Base_rate,  -- UQ4.4
-                  LED_reg,
-                  LED);
+    patterns : entity work.LED_Patterns
+        generic map (
+            SYS_CLKs_sec => to_unsigned(50000000, 26)
+        )
+        port map (
+            clk             => clk,
+            reset           => reset,
+            PB              => PB,
+            SW              => SW,
+            HPS_LED_control => HPS_LED_control,
+            Base_rate       => Base_rate,
+            LED_reg         => LED_reg,
+            LED             => LED
+        );
 
 end architecture;
