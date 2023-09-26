@@ -11,27 +11,34 @@ use ieee.math_real.uniform;  -- For random number generation
 
 
 -- Conditioner test bench
-entity Conditioner_TB is end entity;
+entity Conditioner_TB is
+end entity;
 
 architecture Conditioner_TB_Arch of Conditioner_TB is
     constant CLK_PER : time := 100 ns;
-    signal clk, reset : std_logic;
+
+    signal clk,   reset  : std_logic;
     signal input, output : std_logic;
 begin
 
     -- Conditioner DUT instance
-    dut: entity work.Conditioner
-        generic map (DEBOUNCE_CYCLES => 10)
-        port map (clk,
-                  reset,
-                  input(0) => input,
-                  output(0) => output);
+    dut : entity work.Conditioner
+        generic map (
+            DEBOUNCE_CYCLES => 10
+        )
+        port map (
+            clk       => clk,
+            reset     => reset,
+            input(0)  => input,
+            output(0) => output
+        );
 
     -- Clock driver
-    clock: process begin
+    clock : process is
+    begin
         clk <= '1';
         while true loop
-            wait for CLK_PER/2;
+            wait for CLK_PER / 2;
             clk <= not clk;
         end loop;
     end process;
@@ -41,13 +48,13 @@ begin
     -- build, and would likely be rather fragile anyway. Instead, it simply
     -- produces a representative set of inputs, and requires that the DUT's
     -- outputs be manually verified.
-    tester: process
+    tester : process is
 
         -- Pseudorandom std_logic_vector provider
         -- Sourced from https://vhdlwhiz.com/random-numbers on 09/04/2023
         variable seed1, seed2 : integer := 42;
-        impure function rand_slv(len : integer) return std_logic_vector is
-            variable r : real;
+        impure function rand_slv (len : integer) return std_logic_vector is
+            variable r   : real;
             variable slv : std_logic_vector(len - 1 downto 0);
         begin
             for i in slv'range loop
