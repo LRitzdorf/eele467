@@ -1,0 +1,115 @@
+# VHDL style guide rules
+# Authors: Lucas Ritzdorf, Trevor Vannoy, Ross Snider
+# SPDX-License-Identifier: MIT
+
+rule:
+  global:
+    indentSize: 4
+
+  group:
+    # Make keywords lowercase
+    case:
+      case: lower
+    case::name:
+      disable: true
+    alignment:
+      blank_line_ends_group : true
+      comment_line_ends_group : false
+      compact_alignment : true
+    blank_line:
+      disable: true
+    # Fix all code structure violations
+    structure:
+      action: add
+
+  # Allow default signal and variable assignments
+  signal_007:
+    disable: true
+  variable_007:
+    disable: true
+
+  # Automatically remove default port assignments
+  port_012:
+    fixable: true
+
+  # Use rising_edge() style
+  process_029:
+    clock: edge
+
+  # Allow entity/direct instantiation
+  instantiation_034:
+    method: entity
+
+  # Set (soft) maximum line length to 80 characters
+  length_001:
+    length: 80
+
+  # Restrict consecutive blank lines
+  whitespace_200:
+    blank_lines_allowed: 2
+
+  # Don't require blank line after "when =>" in case statements
+  case_200:
+    disable: true
+  # In fact, don't require a linebreak at all
+  case_012:
+    disable: true
+  # Also, don't require a linebreak after when/else
+  if_022:
+    disable: true
+  if_024:
+    disable: true
+
+  # Don't require a blank line after the "loop" statement or before loop end
+  loop_statement_201:
+    disable: true
+  loop_statement_202:
+    disable: true
+
+  # Don't enforce single spaces in certain aligned constructs
+  case_005:
+    disable: true
+  selected_assignment_106:
+    disable: true
+
+  # Don't indent the use clause after the library clause
+  library_008:
+    indentSize: 0
+
+  # Remove parentheses around if-statement conditionals
+  if_002:
+    parenthesis: remove
+
+  # Remove names in ends of declarations
+  architecture_024:
+    action: remove
+  entity_019:
+    action: remove
+  process_018:
+    action: remove
+  generate_011:
+    action: remove
+  package_014:
+    action: remove
+
+  # Force closing parentheses to be on a new line
+  port_map_004:
+    action: new_line
+  generic_map_004:
+    action: new_line
+  port_014:
+    action: new_line
+  generic_010:
+    action: new_line
+
+  # Allow comments above entity, etc. without a blank line
+  entity_003:
+    style: allow_comment
+  function_006:
+    style: allow_comment
+  generate_004:
+    style: allow_comment
+  architecture_003:
+    style: allow_comment
+  library_003:
+    style: allow_comment
