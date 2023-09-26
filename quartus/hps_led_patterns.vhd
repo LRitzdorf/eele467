@@ -45,7 +45,7 @@ architecture HPS_LED_Patterns_Arch of HPS_LED_Patterns is
 begin
 
     -- Manage reading from mapped registers
-    avalon_register_read : process(clk)
+    avalon_register_read : process(clk) is
     begin
         if rising_edge(clk) and avs_s1_read = '1' then
             case avs_s1_address is
@@ -59,7 +59,7 @@ begin
     end process;
 
     -- Manage writing to mapped registers
-    avalon_register_write : process(clk, reset)
+    avalon_register_write : process(clk, reset) is
     begin
         if reset then
             -- Reset all registers to their default values
