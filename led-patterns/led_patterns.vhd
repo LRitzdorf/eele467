@@ -1,3 +1,5 @@
+-- altera vhdl_input_version vhdl_2008
+
 -- Lucas Ritzdorf
 -- 09/09/2023
 -- EELE 467, Lab 4
@@ -122,7 +124,10 @@ begin
         elsif rising_edge(clk) then
             if PB then
                 current_pattern <= SWITCH;
-                last_pattern    <= current_pattern;
+                if current_pattern /= SWITCH then
+                    last_pattern <= current_pattern;
+                end if;
+                ticks := to_unsigned(0, ticks'length);
             elsif current_pattern = SWITCH then
                 limit := unsigned(Base_rate) * SYS_CLKs_sec;
                 if ticks >= limit(limit'high downto limit'low + 4) - 1 then
@@ -135,7 +140,6 @@ begin
                     elsif SW = x"4" then current_pattern <= CUSTOM;
                     else                 current_pattern <= last_pattern;
                     end if;
-                    ticks := to_unsigned(0, ticks'length);
                 else
                     ticks := ticks + 1;
                 end if;

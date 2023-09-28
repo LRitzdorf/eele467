@@ -87,8 +87,10 @@ dkms.conf
 *.sig
 *.hb_info
 *.summary
+*.sopcinfo
 *.srf
 c5_pin_model_dump.txt
+hps_sdram_p0_summary.csv
 synthesis/
 submodules/
 soc_system/
