@@ -42,9 +42,6 @@
 #define FATAL do { fprintf(stderr, "Error at line %d, file %s (%d) [%s]\n", \
   __LINE__, __FILE__, errno, strerror(errno)); exit(1); } while(0)
 
-#define MAP_SIZE 4096UL
-#define MAP_MASK (MAP_SIZE - 1)
-
 int main(int argc, char **argv) {
     int fd;
     void *map_base, *virt_addr;
@@ -52,12 +49,16 @@ int main(int argc, char **argv) {
     off_t target;
     int access_type = 'w';
 
+    long map_size = sysconf(_SC_PAGESIZE);
+    long map_mask = (map_size - 1);
+
     if(argc < 2) {
         fprintf(stderr, "\nUsage:\t%s { address } [ type [ data ] ]\n"
             "\taddress : memory address to act upon\n"
             "\ttype    : access operation type : [b]yte, [h]alfword, [w]ord\n"
-            "\tdata    : data to be written\n\n",
-            argv[0]);
+            "\tdata    : data to be written\n"
+            "System reports page size of %ld bytes\n\n",
+            argv[0], map_size);
         exit(1);
     }
     target = strtoul(argv[1], 0, 0);
@@ -71,12 +72,12 @@ int main(int argc, char **argv) {
     fflush(stdout);
 
     /* Map one page */
-    map_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, target & ~MAP_MASK);
+    map_base = mmap(0, map_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, target & ~map_mask);
     if(map_base == (void *) -1) FATAL;
     printf("Memory mapped at address %p.\n", map_base);
     fflush(stdout);
 
-    virt_addr = map_base + (target & MAP_MASK);
+    virt_addr = map_base + (target & map_mask);
     switch(access_type) {
         case 'b':
             read_result = *((unsigned char *) virt_addr);
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
         fflush(stdout);
     }
 
-    if(munmap(map_base, MAP_SIZE) == -1) FATAL;
+    if(munmap(map_base, map_size) == -1) FATAL;
     close(fd);
     return 0;
 }
