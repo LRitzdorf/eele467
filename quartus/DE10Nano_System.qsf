@@ -722,15 +722,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 # end ENTITY(soc_system)
 # ----------------------
 
-# ----------------------------------------------
-# start ENTITY(soc_system_PLL_using_AD1939_MCLK)
-
-	# Project-Wide Assignments
-	# ========================
-
-# end ENTITY(soc_system_PLL_using_AD1939_MCLK)
-# --------------------------------------------
-
 # ---------------------------------
 # start ENTITY(soc_system_SystemID)
 

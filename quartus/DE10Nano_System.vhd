@@ -200,9 +200,6 @@ architecture DE10Nano_arch of DE10Nano_System is
     component soc_system is
         port (
             clk_clk                             : in    std_logic;
-            ad1939_abclk_clk                    : in    std_logic;
-            ad1939_alrclk_clk                   : in    std_logic;
-            ad1939_mclk_clk                     : in    std_logic;
             hps_f2h_cold_reset_req_reset_n      : in    std_logic;
             hps_f2h_debug_reset_req_reset_n     : in    std_logic;
             hps_f2h_warm_reset_req_reset_n      : in    std_logic;
@@ -371,11 +368,6 @@ begin
     ---------------------------------------------------------------------------------------------
     u0 : component soc_system
         port map (
-            -- clock and data connections to AD1939
-            ad1939_abclk_clk  => AD1939_ADC_ABCLK,
-            ad1939_alrclk_clk => AD1939_ADC_ALRCLK,
-            ad1939_mclk_clk   => AD1939_MCLK,
-
             -- HPS SPI connection to AD1939
             hps_spim0_txd          => AD1939_spi_CIN,
             hps_spim0_rxd          => AD1939_spi_COUT,
