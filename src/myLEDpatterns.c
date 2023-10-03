@@ -2,7 +2,17 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <argp.h>
 #include <time.h>
+
+
+// Version information
+const char *argp_program_version = "myLEDpatterns 1.0";
+// Documentation
+static char doc[] =
+    "Display LED patterns on a dedicated hardware peripheral.\n";
+// Argument parser setup
+static struct argp argp = {0, 0, 0, doc};
 
 
 // Interrupt flag setup and handling
@@ -18,7 +28,8 @@ int main(int argc, char **argv) {
     // Register interrupt handler
     signal(SIGINT, sig_handler);
 
-    // Print placeholder message
+    // Parse arguments
+    argp_parse(&argp, argc, argv, 0, 0, 0);
     printf("Received %d arguments\n", argc);
 
     // Loop until interrupted
