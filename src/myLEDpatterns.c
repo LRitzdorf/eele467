@@ -1,5 +1,7 @@
 // Lab 8: LED Patterns in C
 
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -7,12 +9,19 @@
 #include <time.h>
 
 
+// Configuration values
+#define MAX_STEPS 32
+
+// Helper macros to allow stringizing other macro values
+#define xstr(a) str(a)
+#define str(a) #a
+
 // Argument parser metadata
 const char *argp_program_version = "myLEDpatterns 1.0";
 const char *argp_program_bug_address = "lucas.ritzdorf@student.montana.edu";
 static char doc[] =
-    "Display LED patterns on a dedicated hardware peripheral.\n";
-static char args_doc[] = "ARG1 ARG2";
+    "Display LED patterns on a dedicated hardware peripheral.\n"
+    "\vCompiled with support for up to " xstr(MAX_STEPS) " pattern steps.";
 // Argument parser options
 static struct argp_option options[] = {
     {"help",    'h', 0, 0, "show this help message", -1},
@@ -21,8 +30,17 @@ static struct argp_option options[] = {
     {0}
 };
 static error_t parse_opt(int, char *, struct argp_state *);
+struct arguments {
+    struct {
+        unsigned int num_steps;
+        uint8_t steps[MAX_STEPS];
+        unsigned int delays[MAX_STEPS];
+    } pattern;
+    char *file;
+    bool verbose;
+};
 // Final parser setup
-static struct argp argp = {options, parse_opt, args_doc, doc};
+static struct argp argp = {options, parse_opt, 0, doc};
 
 // Argument parsing logic
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
