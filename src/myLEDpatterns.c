@@ -69,7 +69,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'p':
             // pattern literal series
-            {
+            if (arguments->file) {
+                fputs("Pattern file already specified; pattern sequence not allowed!\n", stderr);
+                return 1;
+            } else {
                 unsigned int arg_index;
                 for (arg_index = state->next - 1; arg_index < state->argc - 1; arg_index = arg_index + 2) {
                     unsigned int pattern_index = arg_index - state->next + 1;
@@ -85,7 +88,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'f':
             // pattern file
-            arguments->file = arg;
+            if (arguments->pattern.num_steps) {
+                fputs("Pattern sequence already specified; pattern file not allowed!\n", stderr);
+                return 1;
+            } else {
+                arguments->file = arg;
+            }
             break;
 
         default:
@@ -116,6 +124,16 @@ int main(int argc, char **argv) {
         false // Not verbose
     };
     argp_parse(&argp, argc, argv, ARGP_NO_HELP, 0, &params);
+    // Load patterns from file, if provided
+    if (params.file) {
+        // TODO
+        printf("Would load patterns from \"%s\"\n", params.file);
+    }
+    // Ensure that patterns are present
+    if (params.pattern.num_steps == 0) {
+        fputs("No patterns loaded! Provide a pattern sequence or a valid pattern file.\n", stderr);
+        return 1;
+    }
     // TODO: for testing only; remove later
     for (int i = 0; i < params.pattern.num_steps; i++) {
         printf("Pattern %d is 0x%X (%d ms)\n", i, params.pattern.steps[i], params.pattern.delays[i]);
