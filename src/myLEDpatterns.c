@@ -45,6 +45,7 @@ struct arguments {
 // Final parser setup
 static struct argp argp = {options, parse_opt, 0, doc};
 
+
 // Argument parsing logic
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
@@ -74,13 +75,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                 return 1;
             } else {
                 unsigned int arg_index;
+                unsigned int pattern_index = 0;
                 for (arg_index = state->next - 1; arg_index < state->argc - 1; arg_index = arg_index + 2) {
-                    unsigned int pattern_index = arg_index - state->next + 1;
-                    // Increment pattern step count
-                    arguments->pattern.num_steps++;
                     // Capture binary pattern and corresponding delay
                     arguments->pattern.steps [pattern_index] = (uint8_t)strtol(state->argv[arg_index],     NULL, 0);
                     arguments->pattern.delays[pattern_index] = (int)    strtol(state->argv[arg_index + 1], NULL, 0);
+                    // Increment pattern step count
+                    arguments->pattern.num_steps++;
+                    pattern_index++;
                 }
                 // Update parser state with the args we just consumed
                 state->next = arg_index;
