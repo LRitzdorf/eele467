@@ -24,9 +24,12 @@ static char doc[] =
     "\vCompiled with support for up to " xstr(MAX_STEPS) " pattern steps.";
 // Argument parser options
 static struct argp_option options[] = {
-    {"help",    'h', 0, 0, "show this help message", -1},
-    {"version", 'V', 0, 0, "show program version", -1},
-    {"usage",   'u', 0, 0, "show program usage summary", -1},
+    {"help",    'h', 0,                0, "show this help message", -1},
+    {"version", 'V', 0,                0, "show program version", -1},
+    {"usage",   'u', 0,                0, "show program usage summary", -1},
+    {"verbose", 'v', 0,                0, "print information for each displayed pattern step", 0},
+    {"pattern", 'p', "BIN TIME [...]", 0, "specify a sequence of pattern steps", 1},
+    {"file",    'f', "FILE",           0, "specify a file containing pattern steps", 1},
     {0}
 };
 static error_t parse_opt(int, char *, struct argp_state *);
@@ -44,6 +47,7 @@ static struct argp argp = {options, parse_opt, 0, doc};
 
 // Argument parsing logic
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
+    struct arguments *arguments = state->input;
     switch (key) {
         case 'h':
             // help
@@ -58,6 +62,32 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             // usage
             argp_state_help(state, state->out_stream, ARGP_HELP_USAGE | ARGP_HELP_EXIT_OK);
             break;
+
+        case 'v':
+            // verbose
+            arguments->verbose = true;
+            break;
+        case 'p':
+            // pattern literal series
+            {
+                unsigned int arg_index;
+                for (arg_index = state->next - 1; arg_index < state->argc - 1; arg_index = arg_index + 2) {
+                    unsigned int pattern_index = arg_index - state->next + 1;
+                    // Increment pattern step count
+                    arguments->pattern.num_steps++;
+                    // Capture binary pattern and corresponding delay
+                    arguments->pattern.steps [pattern_index] = (uint8_t)strtol(state->argv[arg_index],     NULL, 0);
+                    arguments->pattern.delays[pattern_index] = (int)    strtol(state->argv[arg_index + 1], NULL, 0);
+                }
+                // Update parser state with the args we just consumed
+                state->next = arg_index;
+            }
+            break;
+        case 'f':
+            // pattern file
+            arguments->file = arg;
+            break;
+
         default:
             // Unknown option
             return ARGP_ERR_UNKNOWN;
@@ -80,8 +110,16 @@ int main(int argc, char **argv) {
     signal(SIGINT, sig_handler);
 
     // Parse arguments
-    argp_parse(&argp, argc, argv, ARGP_NO_HELP, 0, 0);
-    printf("Received %d arguments\n", argc);
+    struct arguments params = {
+        {0},  // Empty pattern struct
+        NULL, // Empty filepath
+        false // Not verbose
+    };
+    argp_parse(&argp, argc, argv, ARGP_NO_HELP, 0, &params);
+    // TODO: for testing only; remove later
+    for (int i = 0; i < params.pattern.num_steps; i++) {
+        printf("Pattern %d is 0x%X (%d ms)\n", i, params.pattern.steps[i], params.pattern.delays[i]);
+    }
 
     // Loop until interrupted
     struct timespec ts;
