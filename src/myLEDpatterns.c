@@ -11,6 +11,9 @@
 
 // Configuration values
 #define MAX_STEPS 32
+// Hardware memory addresses
+#define PATTERN_ADDR 0xFF200004
+#define OVERRIDE_ADDR 0xFF200000
 
 // Helper macros to allow stringizing other macro values
 #define xstr(a) str(a)
@@ -110,6 +113,14 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 
+// Hardware memory writing
+int write_mem(unsigned long addr, uint32_t data) {
+    // TODO
+    printf("Would write 0x%X to address 0x%lX\n", data, addr);
+    return 0;
+}
+
+
 // Interrupt flag setup and handling
 static volatile sig_atomic_t interrupted = 0;
 static void sig_handler(int _) {
@@ -145,14 +156,27 @@ int main(int argc, char **argv) {
         printf("Pattern %d is 0x%X (%d ms)\n", i, params.pattern.steps[i], params.pattern.delays[i]);
     }
 
-    // Loop until interrupted
-    struct timespec ts;
-    ts.tv_sec = 1;
-    ts.tv_nsec = 0;
+    unsigned int step = 0;
+    struct timespec ts = {0};
+    // Enable pattern override
+    write_mem(OVERRIDE_ADDR, true);
+    // Display pattern steps in sequence until interrupted
     while (!interrupted) {
-        puts("Still running...");
+        // Convert millisecond input to timespec
+        ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
+        ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
+        // Display pattern and sleep
+        write_mem(PATTERN_ADDR, params.pattern.steps[step]);
         nanosleep(&ts, NULL);
+        // Increment or wrap step counter, as appropriate
+        if (step >= params.pattern.num_steps - 1) {
+            step = 0;
+        } else {
+            step++;
+        }
     }
+    // Clear pattern override on exit
+    write_mem(OVERRIDE_ADDR, false);
 
     return 0;
 }
