@@ -142,10 +142,17 @@ int load_pattern_file(struct arguments *arguments) {
     }
 
     char line[LINE_LEN];
-    // Read in strings individually
-    while (arguments->pattern.num_steps < MAX_STEPS && fgets(line, sizeof(line), fin) != NULL) {
-        // TODO: Process line
-        printf("Read line %s", line);
+    // Read in lines individually, until EOF or too many steps
+    while (arguments->pattern.num_steps < MAX_STEPS
+            && fgets(line, sizeof(line), fin) != NULL) {
+        // Extract values from line
+        unsigned int step;
+        unsigned int delay;
+        sscanf(line, "%X %d", &step, &delay);
+        // Add the corresponding pattern step
+        arguments->pattern.steps [arguments->pattern.num_steps] = (uint8_t)step;
+        arguments->pattern.delays[arguments->pattern.num_steps] = delay;
+        arguments->pattern.num_steps++;
     }
 
     // Clean up and exit
