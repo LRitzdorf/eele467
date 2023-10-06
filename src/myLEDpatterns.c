@@ -12,8 +12,9 @@
 // Configuration values
 #define MAX_STEPS 32
 // Hardware memory addresses
-#define PATTERN_ADDR 0xFF200004
-#define OVERRIDE_ADDR 0xFF200000
+#define BRIDGE_BASE_ADDR 0xFF200000
+#define OVERRIDE_REG 0x0
+#define PATTERN_REG 0x4
 
 // Helper macros to allow stringizing other macro values
 #define xstr(a) str(a)
@@ -159,14 +160,14 @@ int main(int argc, char **argv) {
     unsigned int step = 0;
     struct timespec ts = {0};
     // Enable pattern override
-    write_mem(OVERRIDE_ADDR, true);
+    write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, true);
     // Display pattern steps in sequence until interrupted
     while (!interrupted) {
         // Convert millisecond input to timespec
         ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
         ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
         // Display pattern and sleep
-        write_mem(PATTERN_ADDR, params.pattern.steps[step]);
+        write_mem(BRIDGE_BASE_ADDR + PATTERN_REG, params.pattern.steps[step]);
         nanosleep(&ts, NULL);
         // Increment or wrap step counter, as appropriate
         if (step >= params.pattern.num_steps - 1) {
@@ -176,7 +177,7 @@ int main(int argc, char **argv) {
         }
     }
     // Clear pattern override on exit
-    write_mem(OVERRIDE_ADDR, false);
+    write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, false);
 
     return 0;
 }
