@@ -166,9 +166,9 @@ int load_pattern_file(struct arguments *arguments) {
 
 
 // Hardware memory writing
-int write_mem(unsigned long addr, uint32_t data) {
-    // TODO
-    printf("Would write 0x%X to address 0x%lX\n", data, addr);
+int write_mem(void *map_base, unsigned long offset, uint32_t data) {
+    void *virt_addr = map_base + offset;
+    *((unsigned long *) virt_addr) = data;
     return 0;
 }
 
@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
     unsigned int step = 0;
     struct timespec ts = {0};
     // Enable pattern override
-    write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, true);
+    write_mem(map_base, (BRIDGE_BASE_ADDR + OVERRIDE_REG) & map_mask, true);
     // Display pattern steps in sequence until interrupted
     while (!interrupted) {
 
@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
         if (params.verbose) {
             printf("Displaying pattern step 0x%X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
         }
-        write_mem(BRIDGE_BASE_ADDR + PATTERN_REG, params.pattern.steps[step]);
+        write_mem(map_base, (BRIDGE_BASE_ADDR + PATTERN_REG) & map_mask, params.pattern.steps[step]);
         nanosleep(&ts, NULL);
 
         // Increment or wrap step counter, as appropriate
@@ -249,7 +249,7 @@ int main(int argc, char **argv) {
 
     }
     // Clean up and exit
-    write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, false);
+    write_mem(map_base, (BRIDGE_BASE_ADDR + OVERRIDE_REG) & map_mask, false);
     close(mem);
 
     return 0;
