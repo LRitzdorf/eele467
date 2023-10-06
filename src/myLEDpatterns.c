@@ -198,10 +198,6 @@ int main(int argc, char **argv) {
         fputs("No patterns loaded! Provide a pattern sequence or a valid pattern file.\n", stderr);
         return 1;
     }
-    // TODO: for testing only; remove later
-    for (int i = 0; i < params.pattern.num_steps; i++) {
-        printf("Pattern %d is 0x%X (%d ms)\n", i, params.pattern.steps[i], params.pattern.delays[i]);
-    }
 
     unsigned int step = 0;
     struct timespec ts = {0};
