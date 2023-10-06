@@ -77,6 +77,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                 unsigned int arg_index;
                 unsigned int pattern_index = 0;
                 for (arg_index = state->next - 1; arg_index < state->argc - 1; arg_index = arg_index + 2) {
+                    // Ensure we don't consume more steps than we can handle
+                    if (arguments->pattern.num_steps >= MAX_STEPS) {
+                        break;
+                    }
                     // Capture binary pattern and corresponding delay
                     arguments->pattern.steps [pattern_index] = (uint8_t)strtol(state->argv[arg_index],     NULL, 0);
                     arguments->pattern.delays[pattern_index] = (int)    strtol(state->argv[arg_index + 1], NULL, 0);
