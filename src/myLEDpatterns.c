@@ -11,6 +11,7 @@
 
 // Configuration values
 #define MAX_STEPS 32
+#define LINE_LEN 20
 // Hardware memory addresses
 #define BRIDGE_BASE_ADDR 0xFF200000
 #define OVERRIDE_REG 0x0
@@ -133,6 +134,28 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 }
 
 
+// Pattern loading from file
+int load_pattern_file(struct arguments *arguments) {
+    // Open file, if available
+    FILE* fin = fopen(arguments->file, "r");
+    if (fin == NULL) {
+        fprintf(stderr, "Failed to open input file \"%s\"\n", arguments->file);
+        return 1;
+    }
+
+    char line[LINE_LEN];
+    // Read in strings individually
+    while (arguments->pattern.num_steps < MAX_STEPS && fgets(line, sizeof(line), fin) != NULL) {
+        // TODO: Process line
+        printf("Read line %s", line);
+    }
+
+    // Clean up and exit
+    fclose(fin);
+    return 0;
+}
+
+
 // Hardware memory writing
 int write_mem(unsigned long addr, uint32_t data) {
     // TODO
@@ -163,8 +186,7 @@ int main(int argc, char **argv) {
     argp_parse(&argp, argc, argv, ARGP_NO_HELP, 0, &params);
     // Load patterns from file, if provided
     if (params.file) {
-        // TODO
-        printf("Would load patterns from \"%s\"\n", params.file);
+        load_pattern_file(&params);
     }
     // Ensure that patterns are present
     if (params.pattern.num_steps == 0) {
