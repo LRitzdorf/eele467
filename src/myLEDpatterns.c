@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <argp.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/mman.h>
 #include <time.h>
 
 
@@ -14,6 +17,7 @@
 #define LINE_LEN 20
 // Hardware memory addresses
 #define BRIDGE_BASE_ADDR 0xFF200000
+#define IFACE_LEN 16 //in bytes
 #define OVERRIDE_REG 0x0
 #define PATTERN_REG 0x4
 
@@ -199,6 +203,20 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    // Prepare /dev/mem for writing
+    int mem = open("/dev/mem", 'w');
+    if (mem == -1) {
+        printf("Failed to open /dev/mem for writing. Are you root?\n");
+        return 1;
+    }
+    long map_size = sysconf(_SC_PAGESIZE);
+    long map_mask = (map_size - 1);
+    void *map_base = mmap(0, IFACE_LEN, PROT_WRITE, MAP_SHARED, mem, BRIDGE_BASE_ADDR & ~map_mask);
+    if (map_base == (void *) -1) {
+        printf("Failed to map memory\n");
+        return 1;
+    }
+
     unsigned int step = 0;
     struct timespec ts = {0};
     // Enable pattern override
@@ -230,8 +248,9 @@ int main(int argc, char **argv) {
         }
 
     }
-    // Clear pattern override on exit
+    // Clean up and exit
     write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, false);
+    close(mem);
 
     return 0;
 }
