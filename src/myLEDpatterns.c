@@ -187,6 +187,9 @@ int main(int argc, char **argv) {
         ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
         ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
         // Display pattern and sleep
+        if (params.verbose) {
+            printf("Displaying pattern step 0x%X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
+        }
         write_mem(BRIDGE_BASE_ADDR + PATTERN_REG, params.pattern.steps[step]);
         nanosleep(&ts, NULL);
 
