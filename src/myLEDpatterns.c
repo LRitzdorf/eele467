@@ -32,6 +32,8 @@ static struct argp_option options[] = {
     {"version", 'V', 0,                0, "show program version", -1},
     {"usage",   'u', 0,                0, "show program usage summary", -1},
     {"verbose", 'v', 0,                0, "print information for each displayed pattern step", 0},
+    {"loop",    'l', 0,                0, "display the pattern in an loop until canceled", 0},
+    {"no-loop", 'n', 0,                0, "display the pattern for one cycle", 0},
     {"pattern", 'p', "BIN TIME [...]", 0, "specify a sequence of pattern steps", 1},
     {"file",    'f', "FILE",           0, "specify a file containing pattern steps", 1},
     {0}
@@ -42,9 +44,11 @@ struct arguments {
         unsigned int num_steps;
         uint8_t steps[MAX_STEPS];
         unsigned int delays[MAX_STEPS];
+        bool loop;
     } pattern;
     char *file;
     bool verbose;
+    bool loop_override;
 };
 // Final parser setup
 static struct argp argp = {options, parse_opt, 0, doc};
@@ -72,12 +76,22 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             // verbose
             arguments->verbose = true;
             break;
+        case 'l'|'n':
+            // loop/no-loop overrides
+            arguments->loop_override = true;
+            arguments->pattern.loop = (key == 'l');
+            break;
         case 'p':
             // pattern literal series
             if (arguments->file) {
                 fputs("Pattern file already specified; pattern sequence not allowed!\n", stderr);
                 return 1;
             } else {
+                // Set loop parameter if not overridden
+                if (!arguments->loop_override) {
+                    arguments->pattern.loop = true;
+                }
+                // Parse remaining arguments
                 unsigned int arg_index;
                 unsigned int pattern_index = 0;
                 for (arg_index = state->next - 1; arg_index < state->argc - 1; arg_index = arg_index + 2) {
@@ -102,6 +116,11 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                 fputs("Pattern sequence already specified; pattern file not allowed!\n", stderr);
                 return 1;
             } else {
+                // Set loop parameter if not overridden
+                if (!arguments->loop_override) {
+                    arguments->pattern.loop = false;
+                }
+                // Store (pointer to) filename
                 arguments->file = arg;
             }
             break;
@@ -163,18 +182,27 @@ int main(int argc, char **argv) {
     write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, true);
     // Display pattern steps in sequence until interrupted
     while (!interrupted) {
+
         // Convert millisecond input to timespec
         ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
         ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
         // Display pattern and sleep
         write_mem(BRIDGE_BASE_ADDR + PATTERN_REG, params.pattern.steps[step]);
         nanosleep(&ts, NULL);
+
         // Increment or wrap step counter, as appropriate
         if (step >= params.pattern.num_steps - 1) {
-            step = 0;
+            // Wrap step counter, or exit if not looping
+            if (params.pattern.loop) {
+                step = 0;
+            } else {
+                break;
+            }
         } else {
+            // Increment step counter
             step++;
         }
+
     }
     // Clear pattern override on exit
     write_mem(BRIDGE_BASE_ADDR + OVERRIDE_REG, false);
