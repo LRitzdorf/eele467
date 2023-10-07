@@ -230,7 +230,7 @@ int main(int argc, char **argv) {
                 ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
                 // Display pattern and sleep
                 if (params.verbose) {
-                    printf("Displaying pattern step 0x%X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
+                    printf("Displaying pattern step 0x%08X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
                 }
                 write_mem(map_base, PATTERN_REG, params.pattern.steps[step]);
                 nanosleep(&ts, NULL);
