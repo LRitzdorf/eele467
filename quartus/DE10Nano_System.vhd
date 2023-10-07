@@ -1,5 +1,3 @@
--- altera vhdl_input_version vhdl_2008
-
 --! @file
 --!
 --! @author Ross Snider

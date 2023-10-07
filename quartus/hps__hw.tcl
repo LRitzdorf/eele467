@@ -41,10 +41,6 @@ set_fileset_property QUARTUS_SYNTH TOP_LEVEL HPS_LED_Patterns
 set_fileset_property QUARTUS_SYNTH ENABLE_RELATIVE_INCLUDE_PATHS false
 set_fileset_property QUARTUS_SYNTH ENABLE_FILE_OVERWRITE_MODE false
 add_fileset_file common.vhd VHDL PATH common.vhd
-add_fileset_file led_patterns.vhd VHDL PATH ../led-patterns/led_patterns.vhd
-add_fileset_file clock_generator.vhd VHDL PATH ../led-patterns/clock_generator.vhd
-add_fileset_file pattern_generator.vhd VHDL PATH ../led-patterns/pattern_generator.vhd
-add_fileset_file pattern_cores.vhd VHDL PATH ../led-patterns/pattern_cores.vhd
 add_fileset_file hps_led_patterns.vhd VHDL PATH hps_led_patterns.vhd TOP_LEVEL_FILE
 
 

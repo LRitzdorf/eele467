@@ -43,6 +43,32 @@ architecture HPS_LED_Patterns_Arch of HPS_LED_Patterns is
     signal LED_reg         : std_logic_vector(7 downto 0) := "01010101";
     signal Base_rate       : unsigned(7 downto 0)         := x"10";
 
+    -- LED_Patterns component
+    -- Using this instead of direct instantiation makes Platform Designer happier
+    component LED_Patterns is
+        generic (
+            -- Number of system clock cycles per second
+            SYS_CLKs_sec : unsigned
+        );
+        port (
+            clk             : in    std_logic;
+            -- NOTE: Active high reset
+            reset           : in    std_logic;
+            -- Active high state-change signal
+            PB              : in    std_logic;
+            -- Next-state selection switches
+            SW              : in    std_logic_vector(3 downto 0);
+            -- Asserted when software is in control
+            HPS_LED_control : in    std_logic;
+            -- Base transition period, in seconds (UQ4.4)
+            Base_rate       : in    unsigned(7 downto 0);
+            -- LED register
+            LED_reg         : in    std_logic_vector(7 downto 0);
+            -- LED outputs
+            LED             : out   std_logic_vector(7 downto 0)
+        );
+    end component;
+
 begin
 
     -- Manage reading from mapped registers
@@ -79,7 +105,7 @@ begin
     end process;
 
     -- Instantiate the LED_Patterns component
-    patterns : entity work.LED_Patterns
+    patterns : LED_Patterns
         generic map (
             SYS_CLKs_sec => to_unsigned(50000000, 26)
         )
