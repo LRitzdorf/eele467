@@ -19,8 +19,8 @@
 #define BRIDGE_BASE_ADDR 0xFF200000
 #define BLOCK_BASE_ADDR (BRIDGE_BASE_ADDR + 0x00000000)
 #define NUM_REGS 4
-#define OVERRIDE_REG 0x0
-#define PATTERN_REG 0x4
+#define OVERRIDE_REG 0
+#define PATTERN_REG 1
 
 // Helper macros to allow stringizing other macro values
 #define xstr(a) str(a)
@@ -168,8 +168,14 @@ int load_pattern_file(struct arguments *arguments) {
 
 
 // Hardware memory writing
-int write_mem(void *map_base, unsigned long offset, uint32_t data) {
-    void *virt_addr = map_base + offset;
+int write_mem(void *map_base, unsigned int reg, uint32_t data) {
+    // Ensure target register is in range
+    if (reg >= NUM_REGS) {
+        fprintf(stderr, "Cannot write to device register %d (only " xstr(NUM_REGS) " mapped)\n", reg);
+        return 1;
+    }
+    // Write to the appropriate memory word
+    void *virt_addr = map_base + (sizeof(long) * reg);
     *((unsigned long *) virt_addr) = data;
     return 0;
 }
