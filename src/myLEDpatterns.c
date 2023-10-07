@@ -17,7 +17,8 @@
 #define LINE_LEN 20
 // Hardware memory addresses
 #define BRIDGE_BASE_ADDR 0xFF200000
-#define IFACE_LEN 16 //in bytes
+#define BLOCK_BASE_ADDR (BRIDGE_BASE_ADDR + 0x00000000)
+#define NUM_REGS 4
 #define OVERRIDE_REG 0x0
 #define PATTERN_REG 0x4
 
@@ -203,54 +204,56 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    int exitcode = 0;
     // Prepare /dev/mem for writing
-    int mem = open("/dev/mem", 'w');
+    int mem = open("/dev/mem", O_RDWR | O_SYNC);
     if (mem == -1) {
         printf("Failed to open /dev/mem for writing. Are you root?\n");
-        return 1;
-    }
-    long map_size = sysconf(_SC_PAGESIZE);
-    long map_mask = (map_size - 1);
-    void *map_base = mmap(0, IFACE_LEN, PROT_WRITE, MAP_SHARED, mem, BRIDGE_BASE_ADDR & ~map_mask);
-    if (map_base == (void *) -1) {
-        printf("Failed to map memory\n");
-        return 1;
-    }
-
-    unsigned int step = 0;
-    struct timespec ts = {0};
-    // Enable pattern override
-    write_mem(map_base, (BRIDGE_BASE_ADDR + OVERRIDE_REG) & map_mask, true);
-    // Display pattern steps in sequence until interrupted
-    while (!interrupted) {
-
-        // Convert millisecond input to timespec
-        ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
-        ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
-        // Display pattern and sleep
-        if (params.verbose) {
-            printf("Displaying pattern step 0x%X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
-        }
-        write_mem(map_base, (BRIDGE_BASE_ADDR + PATTERN_REG) & map_mask, params.pattern.steps[step]);
-        nanosleep(&ts, NULL);
-
-        // Increment or wrap step counter, as appropriate
-        if (step >= params.pattern.num_steps - 1) {
-            // Wrap step counter, or exit if not looping
-            if (params.pattern.loop) {
-                step = 0;
-            } else {
-                break;
-            }
+        exitcode = 1;
+    } else {
+        long map_size = 4 * NUM_REGS;
+        void *map_base = mmap(0, map_size, PROT_WRITE, MAP_SHARED, mem, BLOCK_BASE_ADDR);
+        if (map_base == (void *) -1) {
+            printf("Failed to map memory\n");
+            exitcode = 1;
         } else {
-            // Increment step counter
-            step++;
+
+            unsigned int step = 0;
+            struct timespec ts = {0};
+            // Enable pattern override
+            write_mem(map_base, OVERRIDE_REG, true);
+            // Display pattern steps in sequence until interrupted
+            while (!interrupted) {
+
+                // Convert millisecond input to timespec
+                ts.tv_sec = params.pattern.delays[step] / 1000; // Integer division is intended here
+                ts.tv_nsec = (params.pattern.delays[step] % 1000) * 1000000;
+                // Display pattern and sleep
+                if (params.verbose) {
+                    printf("Displaying pattern step 0x%X for %d ms\n", params.pattern.steps[step], params.pattern.delays[step]);
+                }
+                write_mem(map_base, PATTERN_REG, params.pattern.steps[step]);
+                nanosleep(&ts, NULL);
+
+                // Increment or wrap step counter, as appropriate
+                if (step >= params.pattern.num_steps - 1) {
+                    // Wrap step counter, or exit if not looping
+                    if (params.pattern.loop) {
+                        step = 0;
+                    } else {
+                        break;
+                    }
+                } else {
+                    // Increment step counter
+                    step++;
+                }
+
+            }
+            // Clean up and exit
+            write_mem(map_base, OVERRIDE_REG, false);
+            munmap(map_base, map_size);
         }
-
+        close(mem);
     }
-    // Clean up and exit
-    write_mem(map_base, (BRIDGE_BASE_ADDR + OVERRIDE_REG) & map_mask, false);
-    close(mem);
-
-    return 0;
+    return exitcode;
 }
