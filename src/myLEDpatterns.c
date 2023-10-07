@@ -82,7 +82,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             // verbose
             arguments->verbose = true;
             break;
-        case 'l'|'n':
+        case 'l':
+        case 'n':
             // loop/no-loop overrides
             arguments->loop_override = true;
             arguments->pattern.loop = (key == 'l');
