@@ -179,7 +179,7 @@ int write_mem(void *map_base, unsigned long offset, uint32_t data) {
 static volatile sig_atomic_t interrupted = 0;
 static void sig_handler(int _) {
     (void)_;
-    puts("Caught SIGINT, exiting...");
+    puts("\nCaught SIGINT, exiting...");
     interrupted = 1;
 }
 
