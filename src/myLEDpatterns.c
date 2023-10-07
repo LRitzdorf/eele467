@@ -47,7 +47,7 @@ static error_t parse_opt(int, char *, struct argp_state *);
 struct arguments {
     struct {
         unsigned int num_steps;
-        uint8_t steps[MAX_STEPS];
+        unsigned int steps[MAX_STEPS];
         unsigned int delays[MAX_STEPS];
         bool loop;
     } pattern;
@@ -104,8 +104,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
                         break;
                     }
                     // Capture binary pattern and corresponding delay
-                    arguments->pattern.steps [arguments->pattern.num_steps] = (uint8_t)     strtol(state->argv[arg_index],     NULL, 0);
-                    arguments->pattern.delays[arguments->pattern.num_steps] = (unsigned int)strtol(state->argv[arg_index + 1], NULL, 0);
+                    arguments->pattern.steps [arguments->pattern.num_steps] = strtol(state->argv[arg_index],     NULL, 0);
+                    arguments->pattern.delays[arguments->pattern.num_steps] = strtol(state->argv[arg_index + 1], NULL, 0);
                     // Increment pattern step count
                     arguments->pattern.num_steps++;
                 }
@@ -154,7 +154,7 @@ int load_pattern_file(struct arguments *arguments) {
         unsigned int delay;
         sscanf(line, "%X %d", &step, &delay);
         // Add the corresponding pattern step
-        arguments->pattern.steps [arguments->pattern.num_steps] = (uint8_t)step;
+        arguments->pattern.steps [arguments->pattern.num_steps] = step;
         arguments->pattern.delays[arguments->pattern.num_steps] = delay;
         arguments->pattern.num_steps++;
     }
