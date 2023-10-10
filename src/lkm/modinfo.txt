@@ -1,0 +1,9 @@
+filename:       /mnt/d/Documents/Montana_State_University/2023Fall/EELE467/code/src/lkm/kernel_hello.ko
+version:        1.0
+license:        Dual MIT/GPL
+author:         Lucas Ritzdorf
+description:    Hello World Kernel Module
+srcversion:     19716296BE091BB7ABC7D21
+depends:        
+name:           kernel_hello
+vermagic:       6.1.38-243706-g21b5300ed5bd SMP mod_unload ARMv7 p2v8 
