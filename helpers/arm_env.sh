@@ -20,7 +20,7 @@
 # - Change the shell prompt so we can distinguish between the terminal with the cross_compile shell and the other normal ones
 #   Info on prompt syntax: https://www.cyberciti.biz/tips/howto-linux-unix-bash-shell-setup-prompt.html
 bash --init-file <(echo '
-    export CROSS_COMPILE=/usr/bin/arm-linux-gnueabihf-;
+    export CROSS_COMPILE=arm-linux-gnueabihf-;
     export ARCH=arm;
     export PS1="\[\e[01;33m\]arm|\[\e[01;35m\]\w \[\e[01;31m\]>> \[\e[0m\]"
 ')
