@@ -182,7 +182,14 @@ static ssize_t led_reg_store(struct device *dev,
 static ssize_t base_rate_show(struct device *dev,
     struct device_attribute *attr, char *buf)
 {
-    return 0;
+    struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
+
+    u8 base_rate = ioread32(priv->base_addr + REG2_BASE_RATE_OFFSET);
+    // Break the register into its integer and fractional parts
+    unsigned int ipart = base_rate >> 4;
+    unsigned int fpart = (base_rate & 0x0F) * 125;
+
+    return scnprintf(buf, PAGE_SIZE, "%4u.%04u\n", ipart, fpart);
 }
 
 //-----------------------------------------------------------------------
@@ -202,7 +209,19 @@ static ssize_t base_rate_show(struct device *dev,
 static ssize_t base_rate_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
-    return 0;
+    struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
+
+    // Parse the string we received as a u8
+    u8 base_rate;
+    int ret = kstrtou8(buf, 0, &base_rate);
+    if (ret < 0) {
+        // Parsing failed, error out
+        return ret;
+    }
+
+    iowrite32(base_rate, priv->base_addr + REG2_BASE_RATE_OFFSET);
+    // Return the number of bytes we wrote
+    return size;
 }
 
 
