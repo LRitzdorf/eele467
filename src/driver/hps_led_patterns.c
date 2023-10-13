@@ -167,26 +167,59 @@ static ssize_t led_reg_store(struct device *dev,
 
 
 //-----------------------------------------------------------------------
-// TODO: Add show() and store() functions for Register REG2 (Base_rate) in
-// component hps_led_patterns
+// REG2: Base_rate register read function show()
 //-----------------------------------------------------------------------
-// Add here...
+/**
+ * base_rate_show() - Return the led_reg value to user-space via sysfs.
+ * @dev: Device structure for the hps_led_patterns component. This
+ *       device struct is embedded in the hps_led_patterns' platform
+ *       device struct.
+ * @attr: Unused.
+ * @buf: Buffer that gets returned to user-space.
+ *
+ * Return: The number of bytes read.
+ */
+static ssize_t base_rate_show(struct device *dev,
+    struct device_attribute *attr, char *buf)
+{
+    return 0;
+}
+
+//-----------------------------------------------------------------------
+// REG2: Base_rate register write function store()
+//-----------------------------------------------------------------------
+/**
+ * base_rate_store() - Store the led_reg value.
+ * @dev: Device structure for the hps_led_patterns component. This
+ *       device struct is embedded in the hps_led_patterns' platform
+ *       device struct.
+ * @attr: Unused.
+ * @buf: Buffer that contains the  hps_led_patterns value being written.
+ * @size: The number of bytes being written.
+ *
+ * Return: The number of bytes stored.
+ */
+static ssize_t base_rate_store(struct device *dev,
+    struct device_attribute *attr, const char *buf, size_t size)
+{
+    return 0;
+}
 
 
 //-----------------------------------------------------------------------
 // sysfs Attributes
 //-----------------------------------------------------------------------
 // Define sysfs attributes
-static DEVICE_ATTR_RW(hps_led_control);    // Attribute for REG0
-static DEVICE_ATTR_RW(led_reg);            // Attribute for REG1
-// TODO: Add the attribute for REG2 using register name
+static DEVICE_ATTR_RW(hps_led_control);
+static DEVICE_ATTR_RW(led_reg);
+static DEVICE_ATTR_RW(base_rate);
 
 // Create an attribute group so the device core can export the attributes for
 // us.
 static struct attribute *hps_led_patterns_attrs[] = {
     &dev_attr_hps_led_control.attr,
     &dev_attr_led_reg.attr,
-// TODO: Add the attribute entry for REG2 using register name
+    &dev_attr_base_rate.attr,
     NULL,
 };
 ATTRIBUTE_GROUPS(hps_led_patterns);
