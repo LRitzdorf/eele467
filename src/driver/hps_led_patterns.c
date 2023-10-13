@@ -460,7 +460,7 @@ static int hps_led_patterns_remove(struct platform_device *pdev)
 static const struct of_device_id hps_led_patterns_of_match[] = {
     // NOTE: This .compatible string must be identical to the .compatible
     // string in the Device Tree Node for hps_led_patterns
-    { .compatible = "adsd,hps_led_patterns", },
+    { .compatible = "lr,hps_led_patterns", },
     { }
 };
 MODULE_DEVICE_TABLE(of, hps_led_patterns_of_match);
