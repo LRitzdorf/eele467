@@ -11,11 +11,10 @@
 
     // GPIO LED override
     leds {
-        compatible = "gpio-leds";
         hps0 {
             color = <LED_COLOR_ID_GREEN>;
             function = LED_FUNCTION_HEARTBEAT;
-            linux.default-trigger = "timer";
+            linux,default-trigger = "timer";
             led-pattern = <500 250>;
         };
     };
