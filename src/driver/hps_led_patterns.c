@@ -182,7 +182,7 @@ static ssize_t base_rate_show(struct device *dev,
     u8 base_rate = ioread32(priv->base_addr + REG2_BASE_RATE_OFFSET);
     // Break the register into its integer and fractional parts
     unsigned int ipart = base_rate >> 4;
-    unsigned int fpart = (base_rate & 0x0F) * 125;
+    unsigned int fpart = (base_rate & 0x0F) * 625;
 
     return scnprintf(buf, PAGE_SIZE, "%u.%04u\n", ipart, fpart);
 }
