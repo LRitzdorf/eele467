@@ -61,12 +61,10 @@ struct hps_led_patterns_dev {
 static ssize_t hps_led_control_show(struct device *dev,
     struct device_attribute *attr, char *buf)
 {
-    bool hps_control;
-
     // Get the private hps_led_patterns data out of the dev struct
     struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
 
-    hps_control = ioread32(priv->base_addr + REG0_HPS_LED_CONTROL_OFFSET);
+    bool hps_control = ioread32(priv->base_addr + REG0_HPS_LED_CONTROL_OFFSET);
 
     return scnprintf(buf, PAGE_SIZE, "%u\n", hps_control);
 }
@@ -87,13 +85,12 @@ static ssize_t hps_led_control_show(struct device *dev,
 static ssize_t hps_led_control_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
-    bool hps_control;
-    int ret;
     struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
 
     // Parse the string we received as a bool
     // See https://elixir.bootlin.com/linux/latest/source/lib/kstrtox.c#L289
-    ret = kstrtobool(buf, &hps_control);
+    bool hps_control;
+    int ret = kstrtobool(buf, &hps_control);
     if (ret < 0) {
         // kstrtobool returned an error
         return ret;
@@ -122,10 +119,9 @@ static ssize_t hps_led_control_store(struct device *dev,
 static ssize_t led_reg_show(struct device *dev,
     struct device_attribute *attr, char *buf)
 {
-    u8 led_reg;
     struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
 
-    led_reg = ioread32(priv->base_addr + REG1_LED_REG_OFFSET);
+    u8 led_reg = ioread32(priv->base_addr + REG1_LED_REG_OFFSET);
 
     return scnprintf(buf, PAGE_SIZE, "0x%X\n", led_reg);
 }
@@ -147,13 +143,12 @@ static ssize_t led_reg_show(struct device *dev,
 static ssize_t led_reg_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
-    u8 led_reg;
-    int ret;
     struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
 
     // Parse the string we received as a u8
     // See https://elixir.bootlin.com/linux/latest/source/lib/kstrtox.c#L289
-    ret = kstrtou8(buf, 0, &led_reg);
+    u8 led_reg;
+    int ret = kstrtou8(buf, 0, &led_reg);
     if (ret < 0) {
         // kstrtou16 returned an error
         return ret;
