@@ -127,7 +127,7 @@ static ssize_t led_reg_show(struct device *dev,
 
     led_reg = ioread32(priv->base_addr + REG1_LED_REG_OFFSET);
 
-    return scnprintf(buf, PAGE_SIZE, "%u\n", led_reg);
+    return scnprintf(buf, PAGE_SIZE, "0x%X\n", led_reg);
 }
 
 //-----------------------------------------------------------------------
@@ -189,7 +189,7 @@ static ssize_t base_rate_show(struct device *dev,
     unsigned int ipart = base_rate >> 4;
     unsigned int fpart = (base_rate & 0x0F) * 125;
 
-    return scnprintf(buf, PAGE_SIZE, "%4u.%04u\n", ipart, fpart);
+    return scnprintf(buf, PAGE_SIZE, "%u.%04u\n", ipart, fpart);
 }
 
 //-----------------------------------------------------------------------
