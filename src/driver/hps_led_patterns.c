@@ -18,6 +18,53 @@
 
 
 //-----------------------------------------------------------------------
+// HELPER FUNCTIONS
+//-----------------------------------------------------------------------
+/**
+ * str2UQ44() - Convert a decimal string to its UQ4.4 representation.
+ * @buf: Buffer that contains the decimal string to parse.
+ * @size: The length of the buffer.
+ *
+ * Return: The UQ4.4 representation of the string, truncated as necessary.
+ */
+u8 str2UQ44(const char *buf, size_t size) {
+    // Break the string into its integer and fractional parts
+    unsigned int ipart = 0, fpart = 0;
+    // Declaring i here is important, since it needs to be shared by both loops
+    unsigned int i = 0;
+    for (; (i < size) && (buf[i] != '.'); i++) {
+        ipart = 10*ipart + (buf[i] - '0');
+    }
+    i++;
+    unsigned int one = 1;
+    // Order in this loop condition matters, since we exploit short-circuiting
+    // to avoid reading from the buffer if the index is too large
+    for (; (i < size) && (buf[i] != '\0'); i++) {
+        fpart = 10*fpart + (buf[i] - '0');
+        one *= 10;
+    }
+    // Synthesize a UQ4.4 representation of the input
+    // At this point, the variable "one" is 10 to the [number of base-10
+    // fractional digits], which we use to convert to binary
+    unsigned int result = 0;
+    for (unsigned int i = 0; i < 4; i++) {
+        fpart <<= 1;
+        result <<= 1;
+        if (fpart > one) {
+            result += 1;
+            fpart -= one;
+        }
+    }
+    result += ipart << 4;
+    // Saturate if too large a number was given
+    if (result > U8_MAX)
+        return U8_MAX;
+    else
+        return (u8)result;
+}
+
+
+//-----------------------------------------------------------------------
 // HPS_LED_Patterns device structure
 //-----------------------------------------------------------------------
 /**
