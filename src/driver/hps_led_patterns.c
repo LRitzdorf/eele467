@@ -36,7 +36,7 @@ u8 str2UQ44(const char *buf, size_t size) {
     unsigned int one = 1;
     unsigned int result = 0;
     // Break the string into its integer and fractional parts
-    for (; (i < size) && (buf[i] != '.'); i++) {
+    for (; (i < size) && (buf[i] != '\n') && (buf[i] != '.'); i++) {
         unsigned int itemp = 10*ipart + (buf[i] - '0');
         // Check for overflow
         if (itemp < ipart) return U8_MAX;
@@ -45,7 +45,7 @@ u8 str2UQ44(const char *buf, size_t size) {
     i++;
     // Order in this loop condition matters, since we exploit short-circuiting
     // to avoid reading from the buffer if the index is too large
-    for (; (i < size) && (buf[i] != '\0'); i++) {
+    for (; (i < size) && (buf[i] != '\n') && (buf[i] != '\0'); i++) {
         unsigned int ftemp, otemp;
         ftemp = 10*fpart + (buf[i] - '0');
         // Check for overflow
