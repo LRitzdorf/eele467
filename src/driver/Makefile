@@ -1,6 +1,7 @@
 ifneq ($(KERNELRELEASE),)
 # kbuild part of makefile
 obj-m := hps_led_patterns.o
+CFLAGS_$(obj-m) := -DDEBUG
 
 else
 # normal makefile

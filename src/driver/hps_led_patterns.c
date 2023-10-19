@@ -1,5 +1,7 @@
 // Linux Platform Device Driver for the HPS_LED_Patterns component
 
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/mod_devicetable.h>
@@ -54,6 +56,7 @@ u8 str2UQ44(const char *buf, size_t size) {
         fpart = ftemp;
         one = otemp;
     }
+    pr_debug("extracted ipart %u, fpart %u\n", ipart, fpart);
     // Synthesize a UQ4.4 representation of the input
     // At this point, the variable "one" is 10 to the [number of base-10
     // fractional digits], which we use to convert to binary
@@ -66,6 +69,7 @@ u8 str2UQ44(const char *buf, size_t size) {
         }
     }
     result += ipart << 4;
+    pr_debug("synthesized result 0x%02X\n", result);
     // Saturate if too large a number was given
     if (result > U8_MAX)
         return U8_MAX;
