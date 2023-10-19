@@ -260,13 +260,9 @@ static ssize_t base_rate_store(struct device *dev,
 {
     struct hps_led_patterns_dev *priv = dev_get_drvdata(dev);
 
-    // Parse the string we received as a u8
+    // Parse the string we received as a UQ4.4
     u8 base_rate;
-    int ret = kstrtou8(buf, 0, &base_rate);
-    if (ret < 0) {
-        // Parsing failed, error out
-        return ret;
-    }
+    base_rate = str2UQ44(buf, size);
 
     iowrite32(base_rate, priv->base_addr + REG2_BASE_RATE_OFFSET);
     // Return the number of bytes we wrote
