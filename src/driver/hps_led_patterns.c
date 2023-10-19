@@ -28,15 +28,16 @@
  * Return: The UQ4.4 representation of the string, truncated as necessary.
  */
 u8 str2UQ44(const char *buf, size_t size) {
-    // Break the string into its integer and fractional parts
     unsigned int ipart = 0, fpart = 0;
-    // Declaring i here is important, since it needs to be shared by both loops
+    // Declaring i here is important, since it needs to be shared by two loops
     unsigned int i = 0;
+    unsigned int one = 1;
+    unsigned int result = 0;
+    // Break the string into its integer and fractional parts
     for (; (i < size) && (buf[i] != '.'); i++) {
         ipart = 10*ipart + (buf[i] - '0');
     }
     i++;
-    unsigned int one = 1;
     // Order in this loop condition matters, since we exploit short-circuiting
     // to avoid reading from the buffer if the index is too large
     for (; (i < size) && (buf[i] != '\0'); i++) {
@@ -46,7 +47,6 @@ u8 str2UQ44(const char *buf, size_t size) {
     // Synthesize a UQ4.4 representation of the input
     // At this point, the variable "one" is 10 to the [number of base-10
     // fractional digits], which we use to convert to binary
-    unsigned int result = 0;
     for (unsigned int i = 0; i < 4; i++) {
         fpart <<= 1;
         result <<= 1;
