@@ -35,14 +35,24 @@ u8 str2UQ44(const char *buf, size_t size) {
     unsigned int result = 0;
     // Break the string into its integer and fractional parts
     for (; (i < size) && (buf[i] != '.'); i++) {
-        ipart = 10*ipart + (buf[i] - '0');
+        unsigned int itemp = 10*ipart + (buf[i] - '0');
+        // Check for overflow
+        if (itemp < ipart) return U8_MAX;
+        ipart = itemp;
     }
     i++;
     // Order in this loop condition matters, since we exploit short-circuiting
     // to avoid reading from the buffer if the index is too large
     for (; (i < size) && (buf[i] != '\0'); i++) {
-        fpart = 10*fpart + (buf[i] - '0');
-        one *= 10;
+        unsigned int ftemp, otemp;
+        ftemp = 10*fpart + (buf[i] - '0');
+        // Check for overflow
+        if (ftemp < fpart) break;
+        otemp = one * 10;
+        // Check for overflow
+        if (otemp < one) break;
+        fpart = ftemp;
+        one = otemp;
     }
     // Synthesize a UQ4.4 representation of the input
     // At this point, the variable "one" is 10 to the [number of base-10
