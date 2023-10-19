@@ -63,7 +63,7 @@ u8 str2UQ44(const char *buf, size_t size) {
     for (unsigned int i = 0; i < 4; i++) {
         fpart <<= 1;
         result <<= 1;
-        if (fpart > one) {
+        if (fpart >= one) {
             result += 1;
             fpart -= one;
         }
