@@ -20,65 +20,6 @@
 
 
 //-----------------------------------------------------------------------
-// HELPER FUNCTIONS
-//-----------------------------------------------------------------------
-/**
- * str2UQ44() - Convert a decimal string to its UQ4.4 representation.
- * @buf: Buffer that contains the decimal string to parse.
- * @size: The length of the buffer.
- *
- * Return: The UQ4.4 representation of the string, truncated as necessary.
- */
-u8 str2UQ44(const char *buf, size_t size) {
-    unsigned int ipart = 0, fpart = 0;
-    // Declaring i here is important, since it needs to be shared by two loops
-    unsigned int i = 0;
-    unsigned int one = 1;
-    unsigned int result = 0;
-    // Break the string into its integer and fractional parts
-    for (; (i < size) && (buf[i] != '\n') && (buf[i] != '.'); i++) {
-        unsigned int itemp = 10*ipart + (buf[i] - '0');
-        // Check for overflow
-        if (itemp < ipart) return U8_MAX;
-        ipart = itemp;
-    }
-    i++;
-    // Order in this loop condition matters, since we exploit short-circuiting
-    // to avoid reading from the buffer if the index is too large
-    for (; (i < size) && (buf[i] != '\n') && (buf[i] != '\0'); i++) {
-        unsigned int ftemp, otemp;
-        ftemp = 10*fpart + (buf[i] - '0');
-        // Check for overflow
-        if (ftemp < fpart) break;
-        otemp = one * 10;
-        // Check for overflow
-        if (otemp < one) break;
-        fpart = ftemp;
-        one = otemp;
-    }
-    pr_debug("extracted ipart %u, fpart %u\n", ipart, fpart);
-    // Synthesize a UQ4.4 representation of the input
-    // At this point, the variable "one" is 10 to the [number of base-10
-    // fractional digits], which we use to convert to binary
-    for (unsigned int i = 0; i < 4; i++) {
-        fpart <<= 1;
-        result <<= 1;
-        if (fpart >= one) {
-            result += 1;
-            fpart -= one;
-        }
-    }
-    result += ipart << 4;
-    pr_debug("synthesized result 0x%02X\n", result);
-    // Saturate if too large a number was given
-    if (result > U8_MAX)
-        return U8_MAX;
-    else
-        return (u8)result;
-}
-
-
-//-----------------------------------------------------------------------
 // HPS_LED_Patterns device structure
 //-----------------------------------------------------------------------
 /**
@@ -262,7 +203,11 @@ static ssize_t base_rate_store(struct device *dev,
 
     // Parse the string we received as a UQ4.4
     u8 base_rate;
-    base_rate = str2UQ44(buf, size);
+    int ret = kstrtoUQ44(buf, 0, &base_rate);
+    if (ret < 0) {
+        // Parsing returned an error
+        return ret;
+    }
 
     iowrite32(base_rate, priv->base_addr + REG2_BASE_RATE_OFFSET);
     // Return the number of bytes we wrote
