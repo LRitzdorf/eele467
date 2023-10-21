@@ -238,7 +238,7 @@ static ssize_t base_rate_show(struct device *dev,
     unsigned int ipart = base_rate >> 4;
     unsigned int fpart = (base_rate & 0x0F) * 625;
 
-    return scnprintf(buf, PAGE_SIZE, "%u.%04u\n", ipart, fpart);
+    return scnprintf(buf, PAGE_SIZE, "%u.%04u\t0x%X\n", ipart, fpart, base_rate);
 }
 
 //-----------------------------------------------------------------------
