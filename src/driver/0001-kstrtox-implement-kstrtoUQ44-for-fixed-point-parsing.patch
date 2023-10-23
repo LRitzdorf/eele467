@@ -1,0 +1,162 @@
+From 3fd9100ae4ab8696bbd221884278eb987f1995b5 Mon Sep 17 00:00:00 2001
+From: Lucas Ritzdorf <42657792+LRitzdorf@users.noreply.github.com>
+Date: Fri, 20 Oct 2023 20:55:53 -0600
+Subject: [PATCH] kstrtox: implement kstrtoUQ44 for fixed-point parsing
+
+---
+ include/linux/kstrtox.h |   2 +
+ lib/kstrtox.c           | 107 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 109 insertions(+)
+
+diff --git a/include/linux/kstrtox.h b/include/linux/kstrtox.h
+index 529974e22ea7..8364041ee4e0 100644
+--- a/include/linux/kstrtox.h
++++ b/include/linux/kstrtox.h
+@@ -95,6 +95,7 @@ int __must_check kstrtou16(const char *s, unsigned int base, u16 *res);
+ int __must_check kstrtos16(const char *s, unsigned int base, s16 *res);
+ int __must_check kstrtou8(const char *s, unsigned int base, u8 *res);
+ int __must_check kstrtos8(const char *s, unsigned int base, s8 *res);
++int __must_check kstrtoUQ44(const char *s, unsigned int base, u8 *res);
+ int __must_check kstrtobool(const char *s, bool *res);
+ 
+ int __must_check kstrtoull_from_user(const char __user *s, size_t count, unsigned int base, unsigned long long *res);
+@@ -107,6 +108,7 @@ int __must_check kstrtou16_from_user(const char __user *s, size_t count, unsigne
+ int __must_check kstrtos16_from_user(const char __user *s, size_t count, unsigned int base, s16 *res);
+ int __must_check kstrtou8_from_user(const char __user *s, size_t count, unsigned int base, u8 *res);
+ int __must_check kstrtos8_from_user(const char __user *s, size_t count, unsigned int base, s8 *res);
++int __must_check kstrtoUQ44_from_user(const char __user *s, size_t count, unsigned int base, u8 *res);
+ int __must_check kstrtobool_from_user(const char __user *s, size_t count, bool *res);
+ 
+ static inline int __must_check kstrtou64_from_user(const char __user *s, size_t count, unsigned int base, u64 *res)
+diff --git a/lib/kstrtox.c b/lib/kstrtox.c
+index 08c14019841a..84ef22f92c2f 100644
+--- a/lib/kstrtox.c
++++ b/lib/kstrtox.c
+@@ -93,6 +93,31 @@ unsigned int _parse_integer(const char *s, unsigned int base, unsigned long long
+ 	return _parse_integer_limit(s, base, p, INT_MAX);
+ }
+ 
++static int _parse_fractional(const char *s, unsigned int base, unsigned long long *res)
++{
++	unsigned long long fpart, one;
++	int rv;
++
++	rv = _parse_integer(s, base, &fpart);
++	if (rv < 0)
++		return rv;
++	/* Compute (base) ** (number of digits), iteratively */
++	one = 1;
++	for (unsigned int i = 0; i < rv; i++)
++		one *= base;
++	/* Synthesize the fractional component into binary form */
++	*res = 0;
++	for (unsigned int i = 0; i < 4; i++) {
++		*res <<= 1;
++		fpart <<= 1;
++		if (fpart >= one) {
++			*res += 1;
++			fpart -= one;
++		}
++	}
++	return rv;
++}
++
+ static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
+ {
+ 	unsigned long long _res;
+@@ -335,6 +360,87 @@ int kstrtos8(const char *s, unsigned int base, s8 *res)
+ }
+ EXPORT_SYMBOL(kstrtos8);
+ 
++static int _kstrtoUQ44(const char *s, unsigned int base, u8 *res)
++{
++	unsigned long long _res;
++	int rv;
++	char *radix_pt;
++
++	s = _parse_integer_fixup_radix(s, &base);
++	/* Fix misinterpretation of fractional-only numbers */
++	if (base == 8 && s[1] == '.')
++		base = 10;
++	if (base == 10) {
++		/* Treat as a fractional value */
++		unsigned long long ipart;
++		/* Parse integer part */
++		radix_pt = strchr(s, '.');
++		if (radix_pt)
++			rv = _parse_integer_limit(s, base, &ipart, radix_pt - s);
++		else
++			rv = _parse_integer(s, base, &ipart);
++		if (rv & KSTRTOX_OVERFLOW)
++			return -ERANGE;
++		if (rv == 0)
++			return -EINVAL;
++		s += rv;
++		if (radix_pt) {
++			/* Parse fractional part */
++			s++; /* consume the radix point character */
++			rv = _parse_fractional(s, base, &_res);
++			if (rv & KSTRTOX_OVERFLOW)
++				return -ERANGE;
++			if (rv == 0)
++				return -EINVAL;
++			s += rv;
++		} else
++			_res = 0;
++		if (*s == '\n')
++			s++;
++		if (*s)
++			return -EINVAL;
++		_res += ipart << 4;
++	} else {
++		/* Treat as a binary-equivalent literal */
++		rv = kstrtoll(s, base, &_res);
++		if (rv < 0)
++			return rv;
++	}
++	if (_res != (u8)_res)
++		return -ERANGE;
++	*res = _res;
++	return 0;
++}
++
++/**
++ * kstrtoUQ44 - convert a string to a UQ4.4 fixed-point value
++ * @s: The start of the string. The string must be null-terminated, and may also
++ *  include a single newline before its terminating null. The first character
++ *  may also be a plus sign, but not a minus sign. If the string is in decimal,
++ *  it may include a decimal point.
++ * @base: The number base to use. The maximum supported base is 16. If base is
++ *  given as 0, then the base of the string is automatically detected with the
++ *  conventional semantics - If it begins with 0x the number will be parsed as
++ *  a hexadecimal (case insensitive), if it begins with 0. it will be parsed as
++ *  a decimal, and if it otherwise begins with 0, it will be parsed as an octal
++ *  number. Otherwise it will be parsed as a decimal.
++ * @res: Where to write the result of the conversion on success. The result
++ *  will be in UQ4.4 format. If the input is a decimal, the result will
++ *  represent that decimal, truncated to four fractional bits. Otherwise, it
++ *  will be the binary representation of the input.
++ *
++ * Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
++ * Return code must be checked.
++ */
++noinline
++int kstrtoUQ44(const char *s, unsigned int base, u8 *res)
++{
++	if (s[0] == '+')
++		s++;
++	return _kstrtoUQ44(s, base, res);
++}
++EXPORT_SYMBOL(kstrtoUQ44);
++
+ /**
+  * kstrtobool - convert common user inputs into boolean values
+  * @s: input string
+@@ -429,3 +535,4 @@ kstrto_from_user(kstrtou16_from_user,	kstrtou16,	u16);
+ kstrto_from_user(kstrtos16_from_user,	kstrtos16,	s16);
+ kstrto_from_user(kstrtou8_from_user,	kstrtou8,	u8);
+ kstrto_from_user(kstrtos8_from_user,	kstrtos8,	s8);
++kstrto_from_user(kstrtoUQ44_from_user,	kstrtoUQ44,	u8);
+-- 
+2.42.0
+
